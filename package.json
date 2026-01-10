@@ -1,17 +1,21 @@
 {
   "name": "delphis",
   "type": "module",
+  "version": "0.0.1",
   "private": true,
   "module": "index.ts",
   "scripts": {
-    "dev": "bun --watch ./cli/index.ts",
-    "start": "bun ./cli/index.ts",
+    "dev": "bun --watch ./cli/main.ts",
+    "start": "bun ./cli/main.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "bun --bun tsc --noEmit"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "clipanion": "^4.0.0-rc.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.3",
