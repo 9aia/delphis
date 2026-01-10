@@ -1,32 +1,44 @@
 {
   "name": "delphis",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
+  "description": "A CLI for remote dev environments with Tailscale & VS Code Remote SSH.",
   "module": "index.ts",
+  "bin": {
+    "delphis": "./dist/index.js"
+  },
   "scripts": {
-    "dev": "bun --watch ./cli/main.ts",
-    "start": "bun ./cli/main.ts",
+    "postinstall": "bunli generate",
+    "dev": "bun run --watch ./cli/main.ts",
+    "build": "bunli build",
+    "start": "bun run ./cli/main.ts",
+    "preview": "./dist/main",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "bun --bun tsc --noEmit",
     "test": "bun test"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "chalk-template": "^1.1.2",
-    "clipanion": "^4.0.0-rc.4",
+    "@bunli/core": "^0.4.0",
+    "bunli": "^0.4.0",
     "minimist": "^1.2.8",
     "ofetch": "^1.5.1",
     "zod": "^4.3.5"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.3",
-    "@types/bun": "latest",
+    "@bunli/test": "^0.2.0",
+    "@types/bun": "^1.3.5",
     "@types/minimist": "^1.2.5",
     "eslint": "^9.39.2",
     "eslint-plugin-format": "^1.1.0"
+  },
+  "bunli": {
+    "entry": "./cli/main.ts",
+    "outDir": "./dist"
   }
 }

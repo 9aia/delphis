@@ -1,16 +1,17 @@
-import { Command } from 'clipanion'
-import { BaseCommand } from '../lib/clipanion'
+import { defineCommand } from '@bunli/core'
 
-export class HelpCommand extends BaseCommand {
-  static override paths = [['help']]
-
-  static override usage = Command.Usage({
-    description: 'Show help information',
-    details: 'Display help information for the Strigi CLI tool.',
-  })
-
-  async execute() {
-    // Execute the built-in help command by running the CLI with -h flag
-    this.cli.run(['-h'])
-  }
-}
+export default defineCommand({
+  name: 'help',
+  description: 'Show help information',
+  handler: async ({ colors }) => {
+    console.log(colors.green('Delphis CLI - Help'))
+    console.log(colors.cyan('\nAvailable commands:'))
+    console.log(`${colors.yellow('  help')}        Show help information`)
+    console.log(`${colors.yellow('  version')}     Show version information`)
+    console.log(`${colors.yellow('  join')}        Join a remote development environment`)
+    console.log(`${colors.yellow('  share')}       Share a remote development environment`)
+    console.log(`${colors.yellow('  stop')}        Stop a remote development environment`)
+    console.log(`${colors.yellow('  postinstall')} Run postinstall command`)
+    console.log(colors.cyan('\nUse --help with any command for more information.'))
+  },
+})

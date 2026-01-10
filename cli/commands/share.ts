@@ -1,21 +1,26 @@
 import os from 'node:os'
 import process from 'node:process'
-import { Command, Option } from 'clipanion'
-import { BaseCommand } from '../lib/clipanion'
+import { defineCommand, option } from '@bunli/core'
+import { z } from 'zod'
+import { logger } from '../main'
 
-export class ShareCommand extends BaseCommand {
-  static override paths = [['share']]
+export default defineCommand({
+  name: 'share',
+  description: 'Share a remote development environment',
+  options: {
+    detach: option(
+      z.coerce.boolean().default(false),
+      { description: 'Run in detached mode', short: 'd' },
+    ),
+    readonly: option(
+      z.coerce.boolean().default(false),
+      { description: 'Run in readonly mode', short: 'r' },
+    ),
+  },
+  handler: async ({ flags }) => {
+    logger.info('Sharing Delphis...')
 
-  static override usage = Command.Usage({
-    description: 'Share a remote development environment',
-    details: 'Share a remote development environment using Tailscale and VS Code.',
-  })
-
-  detach = Option.Boolean('-d,--detach', false)
-  readonly = Option.Boolean('-r,--readonly', false)
-
-  async execute() {
-    this.context.stdout.write('Sharing Delphis...\n')
+    // TODO: implement readonly mode
 
     const args = ['docker', 'run', '-d']
     args.push(
@@ -38,7 +43,7 @@ export class ShareCommand extends BaseCommand {
       cwd: process.cwd(),
       stdout: 'inherit',
       stderr: 'inherit',
-      detached: true,
+      detached: flags.detach,
     })
 
     const exitCode = await proc.exited
@@ -46,5 +51,5 @@ export class ShareCommand extends BaseCommand {
     if (exitCode !== 0) {
       throw new Error('docker run failed')
     }
-  }
-}
+  },
+})

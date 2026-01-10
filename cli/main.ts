@@ -1,25 +1,27 @@
-import process from 'node:process'
-import { Builtins, Cli } from 'clipanion'
+import { createCLI } from '@bunli/core'
 import pkg from '../package.json'
-import { HelpCommand } from './commands/help'
-import { JoinCommand } from './commands/join'
-import { ShareCommand } from './commands/share'
-import { StopCommand } from './commands/stop'
+import helpCommand from './commands/help'
+import joinCommand from './commands/join'
+import postinstallCommand from './commands/postinstall'
+import shareCommand from './commands/share'
+import stopCommand from './commands/stop'
+import versionCommand from './commands/version'
+import { createLogger } from './lib/logger'
 
-process.on('SIGINT', () => {
-  process.stdout.write('\n\n')
-  process.exit()
+export const logger = createLogger()
+
+const cli = await createCLI({
+  name: pkg.name,
+  version: pkg.version,
+  description: pkg.description,
 })
 
-const cli = new Cli({
-  binaryName: 'delphis',
-  binaryLabel: 'Delphis',
-  binaryVersion: pkg.version,
-})
-cli.register(HelpCommand)
-cli.register(JoinCommand)
-cli.register(ShareCommand)
-cli.register(StopCommand)
-cli.register(Builtins.HelpCommand)
-cli.register(Builtins.VersionCommand)
-cli.runExit(process.argv.slice(2))
+// Register commands
+cli.command(helpCommand)
+cli.command(versionCommand)
+cli.command(joinCommand)
+cli.command(shareCommand)
+cli.command(stopCommand)
+cli.command(postinstallCommand)
+
+await cli.run()

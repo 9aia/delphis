@@ -51,7 +51,7 @@
 
   "files.exclude": {
     "**/node_modules": true,
-    "**/dist": true
+    "**/.bunli": true
   },
 
   "explorer.fileNesting.enabled": true,

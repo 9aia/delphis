@@ -1,20 +1,12 @@
 import process from 'node:process'
-import { Command, Option } from 'clipanion'
-import { BaseCommand } from '../lib/clipanion'
+import { defineCommand } from '@bunli/core'
+import { logger } from '../main'
 
-export class StopCommand extends BaseCommand {
-  static override paths = [['stop']]
-
-  static override usage = Command.Usage({
-    description: 'Stop a remote development environment',
-    details: 'Stop a remote development environment using Tailscale and VS Code.',
-  })
-
-  detach = Option.Boolean('-d,--detach', false)
-  readonly = Option.Boolean('-r,--readonly', false)
-
-  async execute() {
-    this.context.stdout.write('Stopping Delphis...\n')
+export default defineCommand({
+  name: 'stop',
+  description: 'Stop a remote development environment',
+  handler: async () => {
+    logger.info('Stopping Delphis...')
 
     const args = ['docker', 'stop', 'delphis']
 
@@ -22,7 +14,6 @@ export class StopCommand extends BaseCommand {
       cwd: process.cwd(),
       stdout: 'inherit',
       stderr: 'inherit',
-      detached: true,
     })
 
     const rmArgs = ['docker', 'rm', '-f', 'delphis']
@@ -31,7 +22,6 @@ export class StopCommand extends BaseCommand {
       cwd: process.cwd(),
       stdout: 'ignore',
       stderr: 'ignore',
-      detached: true,
     })
 
     await rmProc.exited
@@ -40,5 +30,5 @@ export class StopCommand extends BaseCommand {
     if (exitCode !== 0) {
       throw new Error('docker stop failed')
     }
-  }
-}
+  },
+})
