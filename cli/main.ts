@@ -1,6 +1,7 @@
 import process from 'node:process'
-import { Cli } from 'clipanion'
+import { Builtins, Cli } from 'clipanion'
 import pkg from '../package.json'
+import { HelpCommand } from './commands/help'
 import { JoinCommand } from './commands/join'
 
 process.on('SIGINT', () => {
@@ -13,5 +14,8 @@ const cli = new Cli({
   binaryLabel: 'Delphis',
   binaryVersion: pkg.version,
 })
+cli.register(HelpCommand)
 cli.register(JoinCommand)
+cli.register(Builtins.HelpCommand)
+cli.register(Builtins.VersionCommand)
 cli.runExit(process.argv.slice(2))
