@@ -32,7 +32,7 @@ export abstract class LogableCommand<C extends BaseContext = BaseContext> extend
 }
 
 export abstract class BaseCommand<C extends BaseContext = BaseContext> extends LogableCommand<C> {
-  async catch(error: unknown) {
+  override async catch(error: unknown) {
     this.logger.error(`Internal error: ${error instanceof Error
       ? error.message
       : String(error)}`)

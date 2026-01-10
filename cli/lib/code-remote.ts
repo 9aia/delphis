@@ -1,9 +1,7 @@
 import minimist from 'minimist'
-
 import { z } from 'zod'
-
 import { env } from '../env'
-import { portSchema, usernameSchema } from './zod'
+import { linuxUsernameSchema, tcpPortSchema } from './zod'
 
 export abstract class CodeRemoteError extends Error {}
 
@@ -15,8 +13,8 @@ export class CodeRemotePasswordWithoutUsernameError extends CodeRemoteError {
 
 export const buildSshRemoteAuthoritySchema = z.object({
   host: z.string(),
-  port: portSchema.optional(),
-  username: usernameSchema,
+  port: tcpPortSchema.optional(),
+  username: linuxUsernameSchema,
   password: z.string().optional(),
 })
 export type SshRemoteAuthorityOptions = z.infer<typeof buildSshRemoteAuthoritySchema>

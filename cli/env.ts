@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { z } from 'zod'
-import { portSchema } from './lib/zod'
+import { tcpPortSchema } from './lib/zod'
 
 /**
  * Environment variable schema using Zod
@@ -17,7 +17,7 @@ const envSchema = z.object({
   // SSH connection settings
   DELPHIS_USERNAME: z.string().nullable().default('delphis'),
   DELPHIS_PASSWORD: z.string().optional(),
-  DELPHIS_PORT: portSchema.default(22444),
+  DELPHIS_PORT: tcpPortSchema.default(22444),
 
   // Editor settings
   DELPHIS_FOLDER: z.string().default('./delphis'),
