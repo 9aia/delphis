@@ -1,26 +1,16 @@
 import type { TailscaleDevicesResponse } from '../../types/tailscale/devices'
 import os from 'node:os'
-import process from 'node:process'
 import { ofetch } from 'ofetch'
+import { env } from '../env'
 
 const TAILSCALE_API_URL = 'https://api.tailscale.com/api/v2'
 
 const fetchTailscale = ofetch.create({
   baseURL: TAILSCALE_API_URL,
   headers: {
-    Authorization: `Bearer ${process.env.TAILSCALE_API_ACCESS_TOKEN}`,
+    Authorization: `Bearer ${env.DELPHIS_TAILSCALE_API_ACCESS_TOKEN}`,
   },
 })
-
-export async function isTailscaleInstalled(): Promise<boolean> {
-  const proc = Bun.spawn(['which', 'tailscale'], {
-    stdout: 'ignore',
-    stderr: 'ignore',
-  })
-
-  const exitCode = await proc.exited
-  return exitCode === 0
-}
 
 export async function isTailscaleUp() {
   const tailscaleIp = getTailscaleIp()
@@ -76,7 +66,9 @@ export async function isTailscaleIpOnline(ip: string) {
     return false
   }
 
-  const devices = await fetchTailscale<TailscaleDevicesResponse>(`/tailnet/${process.env.TAILSCALE_TAILNET_ID}/devices`)
+  const devices = await fetchTailscale<TailscaleDevicesResponse>(
+    `/tailnet/${env.DELPHIS_TAILSCALE_TAILNET_ID}/devices`,
+  )
 
   for (const device of devices.devices) {
     for (const address of device.addresses) {

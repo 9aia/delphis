@@ -1,10 +1,10 @@
 import os from 'node:os'
-import process, { env } from 'node:process'
 import { defineCommand, option } from '@bunli/core'
 import { intro, log, outro } from '@clack/prompts'
 import c from 'chalk'
 import { z } from 'zod'
 import pkg from '../../package.json'
+import { env } from '../env'
 import { logger } from '../logger'
 
 export default defineCommand({
@@ -24,11 +24,13 @@ export default defineCommand({
       { description: 'Name of the container', short: 'n' },
     ),
   },
-  handler: async ({ flags, positional }) => {
+  handler: async ({ flags }) => {
     intro(c.inverse(pkg.name))
 
     log.info('Sharing Delphis...')
-    logger.debug(`NODE_ENV: ${env.NODE_ENV ?? 'undefined'}`)
+
+    logger.info('Command share started')
+    logger.debug(`NODE_ENV: ${env.NODE_ENV}`)
 
     outro(c.green('Delphis is now sharing your environment.'))
     return
@@ -42,11 +44,11 @@ export default defineCommand({
       '--network',
       'host',
       '-e',
-      `USER=${process.env.DELPHIS_USER}`,
+      `USER=${env.DELPHIS_USERNAME}`,
       '-e',
-      `PASSWORD=${process.env.DELPHIS_PASSWORD}`,
+      `PASSWORD=${env.DELPHIS_PASSWORD}`,
       '-v',
-      `${os.homedir()}/.gitconfig:/home/${process.env.DELPHIS_USER}/.gitconfig:ro`,
+      `${os.homedir()}/.gitconfig:/home/${env.DELPHIS_USERNAME}/.gitconfig:ro`,
       '-v',
       `${process.cwd()}:/delphis`,
       'delphis',

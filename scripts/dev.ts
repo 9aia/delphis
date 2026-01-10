@@ -6,7 +6,7 @@ try {
   const argv = mri(process.argv.slice(2))
   const positional = argv._
 
-  await Bun.$`bun run --watch ./cli/main.ts ${positional}`
+  await Bun.$`NODE_ENV=development bun run --watch ./cli/main.ts ${positional}`
 }
 catch (error) {
   console.error('Failed to start dev server:', error)

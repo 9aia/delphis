@@ -6,6 +6,6 @@ export default antfu({
     'no-console': 'off',
   },
   ignores: [
-    'cli/commands.gen.ts',
+    '.bunli/commands.gen.ts',
   ],
 })
