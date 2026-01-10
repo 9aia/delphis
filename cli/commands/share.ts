@@ -1,11 +1,12 @@
 import os from 'node:os'
+import process from 'node:process'
 import { defineCommand, option } from '@bunli/core'
 import { intro, log, outro } from '@clack/prompts'
 import c from 'chalk'
 import { z } from 'zod'
 import pkg from '../../package.json'
 import { env } from '../env'
-import { logger } from '../logger'
+import { isBinaryInstalled } from '../lib/os'
 
 export default defineCommand({
   name: 'share',
@@ -29,11 +30,12 @@ export default defineCommand({
 
     log.info('Sharing Delphis...')
 
-    logger.info('Command share started')
-    logger.debug(`NODE_ENV: ${env.NODE_ENV}`)
+    const dockerInstalled = await isBinaryInstalled('docker')
 
-    outro(c.green('Delphis is now sharing your environment.'))
-    return
+    if (!dockerInstalled) {
+      log.error('Docker is not installed. Please install Docker and try again.')
+      return
+    }
 
     // TODO: implement readonly mode
 
@@ -64,7 +66,10 @@ export default defineCommand({
     const exitCode = await proc.exited
 
     if (exitCode !== 0) {
-      throw new Error('docker run failed')
+      log.error('Failed to share Delphis. Please try again.')
+      process.exit(1)
     }
+
+    outro(c.green('Delphis is now sharing your environment.'))
   },
 })

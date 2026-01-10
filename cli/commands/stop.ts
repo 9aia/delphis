@@ -32,7 +32,8 @@ export default defineCommand({
 
     const exitCode = await proc.exited
     if (exitCode !== 0) {
-      throw new Error('docker stop failed')
+      log.error('Failed to stop Delphis. Please try again.')
+      process.exit(1)
     }
 
     outro(c.green('Delphis has been stopped.'))

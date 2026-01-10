@@ -3,7 +3,8 @@ import { intro, log, outro } from '@clack/prompts'
 import c from 'chalk'
 import pkg from '../../package.json'
 import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '../lib/code-remote'
-import { isTailscaleInstalled, isTailscaleUp } from '../lib/tailscale'
+import { isBinaryInstalled } from '../lib/os'
+import { isTailscaleUp } from '../lib/tailscale'
 
 export default defineCommand({
   name: 'join',
@@ -11,7 +12,7 @@ export default defineCommand({
   handler: async ({ positional }) => {
     intro(c.inverse(pkg.name))
 
-    const tailscaleInstalled = await isTailscaleInstalled()
+    const tailscaleInstalled = await isBinaryInstalled('tailscale')
 
     if (!tailscaleInstalled) {
       log.error('Tailscale is not installed. Please install Tailscale and try again.')
