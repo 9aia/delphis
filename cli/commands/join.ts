@@ -3,7 +3,7 @@ import { BaseCommand } from '../lib/clipanion'
 import { getTailscaleIp, isTailscaleInstalled, isTailscaleUp } from '../lib/tailscale'
 
 export class JoinCommand extends BaseCommand {
-  static override paths = [['join', 'j']]
+  static override paths = [['join']]
 
   static override usage = Command.Usage({
     description: 'Join a remote development environment',
