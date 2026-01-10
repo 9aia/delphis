@@ -3,6 +3,8 @@ import { Builtins, Cli } from 'clipanion'
 import pkg from '../package.json'
 import { HelpCommand } from './commands/help'
 import { JoinCommand } from './commands/join'
+import { ShareCommand } from './commands/share'
+import { StopCommand } from './commands/stop'
 
 process.on('SIGINT', () => {
   process.stdout.write('\n\n')
@@ -16,6 +18,8 @@ const cli = new Cli({
 })
 cli.register(HelpCommand)
 cli.register(JoinCommand)
+cli.register(ShareCommand)
+cli.register(StopCommand)
 cli.register(Builtins.HelpCommand)
 cli.register(Builtins.VersionCommand)
 cli.runExit(process.argv.slice(2))

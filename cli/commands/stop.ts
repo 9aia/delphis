@@ -1,4 +1,5 @@
-import { Command } from 'clipanion'
+import process from 'node:process'
+import { Command, Option } from 'clipanion'
 import { BaseCommand } from '../lib/clipanion'
 
 export class StopCommand extends BaseCommand {
@@ -9,8 +10,35 @@ export class StopCommand extends BaseCommand {
     details: 'Stop a remote development environment using Tailscale and VS Code.',
   })
 
+  detach = Option.Boolean('-d,--detach', false)
+  readonly = Option.Boolean('-r,--readonly', false)
+
   async execute() {
-    // run: docker stop delphis
-    this.context.stdout.write(`Stopping Delphis...\n`)
+    this.context.stdout.write('Stopping Delphis...\n')
+
+    const args = ['docker', 'stop', 'delphis']
+
+    const proc = Bun.spawn(args, {
+      cwd: process.cwd(),
+      stdout: 'inherit',
+      stderr: 'inherit',
+      detached: true,
+    })
+
+    const rmArgs = ['docker', 'rm', '-f', 'delphis']
+
+    const rmProc = Bun.spawn(rmArgs, {
+      cwd: process.cwd(),
+      stdout: 'ignore',
+      stderr: 'ignore',
+      detached: true,
+    })
+
+    await rmProc.exited
+
+    const exitCode = await proc.exited
+    if (exitCode !== 0) {
+      throw new Error('docker stop failed')
+    }
   }
 }

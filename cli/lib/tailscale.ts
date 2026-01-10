@@ -1,5 +1,4 @@
 import type { TailscaleDevicesResponse } from '../../types/tailscale/devices'
-import { exec } from 'node:child_process'
 import os from 'node:os'
 import process from 'node:process'
 import { ofetch } from 'ofetch'
@@ -14,11 +13,13 @@ const fetchTailscale = ofetch.create({
 })
 
 export async function isTailscaleInstalled(): Promise<boolean> {
-  return new Promise((resolve) => {
-    exec('which tailscale', (error) => {
-      resolve(!error)
-    })
+  const proc = Bun.spawn(['which', 'tailscale'], {
+    stdout: 'ignore',
+    stderr: 'ignore',
   })
+
+  const exitCode = await proc.exited
+  return exitCode === 0
 }
 
 export async function isTailscaleUp() {

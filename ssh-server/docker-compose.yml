@@ -1,0 +1,14 @@
+name: thal
+services:
+  delphis:
+    build:
+      context: ./delphis
+      dockerfile: ./dockerfile
+    container_name: delphis
+    network_mode: host
+    environment:
+      - USER=$DELPHIS_USER
+      - PASSWORD=$DELPHIS_PASSWORD
+    volumes:
+      - ~/.gitconfig:/home/$DELPHIS_USER/.gitconfig:ro
+      - ./:/delphis
