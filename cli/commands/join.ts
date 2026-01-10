@@ -1,6 +1,7 @@
 import { Command, Option } from 'clipanion'
 import { BaseCommand } from '../lib/clipanion'
-import { getTailscaleIp, isTailscaleInstalled, isTailscaleUp } from '../lib/tailscale'
+import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '../lib/code-remote'
+import { isTailscaleInstalled, isTailscaleUp } from '../lib/tailscale'
 
 export class JoinCommand extends BaseCommand {
   static override paths = [['join']]
@@ -10,21 +11,9 @@ export class JoinCommand extends BaseCommand {
     details: 'Join a remote development environment using Tailscale and VS Code.',
   })
 
-  rest = Option.Rest()
+  codeArgs = Option.Rest()
 
   async execute() {
-    const codeArgs = this.rest.slice(1)
-
-    console.log(codeArgs)
-    // openRemoteCode({
-    //   host: 'localhost',
-    //   codeArgs,
-    // })
-
-    return
-
-    this.context.stdout.write(`Hello ${this.name}!\n`)
-
     const tailscaleInstalled = await isTailscaleInstalled()
 
     if (!tailscaleInstalled) {
@@ -37,8 +26,20 @@ export class JoinCommand extends BaseCommand {
       this.logger.error('Tailscale is not up. Please start Tailscale and try again.')
     }
 
-    const ip = getTailscaleIp()
+    // TODO: discover the host on tailnet. they will have the port listening
 
-    this.context.stdout.write(`Tailscale IP: ${ip}\n`)
+    const host = 'localhost'
+
+    try {
+      openRemoteCode({
+        host,
+        codeArgs: this.codeArgs,
+      })
+    }
+    catch (error) {
+      if (error instanceof CodeRemotePasswordWithoutUsernameError) {
+        this.logger.warn(error.message)
+      }
+    }
   }
 }

@@ -52,5 +52,12 @@
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true
+  },
+
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "README.md": "LICENSE",
+    ".env.example": ".env",
+    "package.json": "bun.lock, tsconfig.json, eslint.config.js"
   }
 }

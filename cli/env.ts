@@ -15,7 +15,7 @@ const envSchema = z.object({
   DELPHIS_LAUNCH_EDITOR: z.string().default('code'),
 
   // SSH connection settings
-  DELPHIS_USERNAME: z.string().default('delphis').optional(),
+  DELPHIS_USERNAME: z.string().nullable().default('delphis'),
   DELPHIS_PASSWORD: z.string().optional(),
   DELPHIS_PORT: portSchema.default(22444),
 
