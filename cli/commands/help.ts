@@ -2,9 +2,9 @@ import { Command } from 'clipanion'
 import { BaseCommand } from '../lib/clipanion'
 
 export class HelpCommand extends BaseCommand {
-  static paths = [['help']]
+  static override paths = [['help']]
 
-  static usage = Command.Usage({
+  static override usage = Command.Usage({
     description: 'Show help information',
     details: 'Display help information for the Strigi CLI tool.',
   })

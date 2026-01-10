@@ -11,11 +11,16 @@ const envSchema = z.object({
   DELPHIS_TAILSCALE_API_ACCESS_TOKEN: z.string().nonempty(),
   DELPHIS_TAILSCALE_TAILNET_ID: z.string().nonempty(),
 
+  // Editor settings
+  DELPHIS_LAUNCH_EDITOR: z.string().default('code'),
+
   // SSH connection settings
+  DELPHIS_USERNAME: z.string().default('delphis').optional(),
+  DELPHIS_PASSWORD: z.string().optional(),
   DELPHIS_PORT: portSchema.default(22444),
 
   // Editor settings
-  DELPHIS_LAUNCH_EDITOR: z.string().default('code'),
+  DELPHIS_FOLDER: z.string().default('./delphis'),
 })
 
 /**

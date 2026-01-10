@@ -1,11 +1,28 @@
-import { Option } from 'clipanion'
+import { Command, Option } from 'clipanion'
 import { BaseCommand } from '../lib/clipanion'
 import { getTailscaleIp, isTailscaleInstalled, isTailscaleUp } from '../lib/tailscale'
 
 export class JoinCommand extends BaseCommand {
-  name = Option.String()
+  static override paths = [['join', 'j']]
+
+  static override usage = Command.Usage({
+    description: 'Join a remote development environment',
+    details: 'Join a remote development environment using Tailscale and VS Code.',
+  })
+
+  rest = Option.Rest()
 
   async execute() {
+    const codeArgs = this.rest.slice(1)
+
+    console.log(codeArgs)
+    // openRemoteCode({
+    //   host: 'localhost',
+    //   codeArgs,
+    // })
+
+    return
+
     this.context.stdout.write(`Hello ${this.name}!\n`)
 
     const tailscaleInstalled = await isTailscaleInstalled()
