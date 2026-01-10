@@ -17,6 +17,7 @@
   "dependencies": {
     "chalk-template": "^1.1.2",
     "clipanion": "^4.0.0-rc.4",
+    "ofetch": "^1.5.1",
     "zod": "^4.3.5"
   },
   "devDependencies": {
