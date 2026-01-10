@@ -1,12 +1,16 @@
 import process from 'node:process'
 import { defineCommand } from '@bunli/core'
-import { logger } from '../main'
+import { intro, log, outro } from '@clack/prompts'
+import c from 'chalk'
+import pkg from '../../package.json'
 
 export default defineCommand({
   name: 'stop',
   description: 'Stop a remote development environment',
   handler: async () => {
-    logger.info('Stopping Delphis...')
+    intro(c.inverse(pkg.name))
+
+    log.info('Stopping Delphis...')
 
     const args = ['docker', 'stop', 'delphis']
 
@@ -30,5 +34,7 @@ export default defineCommand({
     if (exitCode !== 0) {
       throw new Error('docker stop failed')
     }
+
+    outro(c.green('Delphis has been stopped.'))
   },
 })

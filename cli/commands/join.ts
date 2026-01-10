@@ -1,23 +1,27 @@
 import { defineCommand } from '@bunli/core'
+import { intro, log, outro } from '@clack/prompts'
+import c from 'chalk'
+import pkg from '../../package.json'
 import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '../lib/code-remote'
 import { isTailscaleInstalled, isTailscaleUp } from '../lib/tailscale'
-import { logger } from '../main'
 
 export default defineCommand({
   name: 'join',
   description: 'Join a remote development environment',
   handler: async ({ positional }) => {
+    intro(c.inverse(pkg.name))
+
     const tailscaleInstalled = await isTailscaleInstalled()
 
     if (!tailscaleInstalled) {
-      logger.error('Tailscale is not installed. Please install Tailscale and try again.')
+      log.error('Tailscale is not installed. Please install Tailscale and try again.')
       return
     }
 
     const tailscaleUp = await isTailscaleUp()
 
     if (!tailscaleUp) {
-      logger.error('Tailscale is not up. Please start Tailscale and try again.')
+      log.error('Tailscale is not up. Please start Tailscale and try again.')
       return
     }
 
@@ -35,11 +39,13 @@ export default defineCommand({
     }
     catch (error) {
       if (error instanceof CodeRemotePasswordWithoutUsernameError) {
-        logger.warn(error.message)
+        log.warn(error.message)
       }
       else {
         throw error
       }
     }
+
+    outro(c.green('Joined the remote development environment.'))
   },
 })

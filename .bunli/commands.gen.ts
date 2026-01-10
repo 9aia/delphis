@@ -4,32 +4,23 @@
 import type { Command, CLI, GeneratedOptionMeta, RegisteredCommands, CommandOptions, GeneratedCommandMeta } from '@bunli/core'
 import { createGeneratedHelpers, registerGeneratedStore } from '@bunli/core'
 
-import Help from '../cli/commands/help.js'
 import Join from '../cli/commands/join.js'
 import Postinstall from '../cli/commands/postinstall.js'
 import Share from '../cli/commands/share.js'
 import Stop from '../cli/commands/stop.js'
-import Version from '../cli/commands/version.js'
 
 // Narrow list of command names to avoid typeof-cycles in types
-const names = ['help', 'join', 'postinstall', 'share', 'stop', 'version'] as const
+const names = ['join', 'postinstall', 'share', 'stop'] as const
 type GeneratedNames = typeof names[number]
 
 const modules: Record<GeneratedNames, Command<any>> = {
-  'help': Help,
   'join': Join,
   'postinstall': Postinstall,
   'share': Share,
-  'stop': Stop,
-  'version': Version
+  'stop': Stop
 } as const
 
 const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
-  'help': {
-      name: 'help',
-      description: 'Show help information',
-      path: '../cli/commands/help'
-    },
   'join': {
       name: 'join',
       description: 'Join a remote development environment',
@@ -44,8 +35,9 @@ const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
       name: 'share',
       description: 'Share a remote development environment',
       options: {
-        'detach': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in detached mode', short: 'd', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":341,"end":346,"loc":{"start":{"line":12,"column":33,"index":341},"end":{"line":12,"column":38,"index":346}},"value":false}}]}, validator: '(val) => true' },
-        'readonly': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in readonly mode', short: 'r', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":470,"end":475,"loc":{"start":{"line":16,"column":33,"index":470},"end":{"line":16,"column":38,"index":475}},"value":false}}]}, validator: '(val) => true' }
+        'detach': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in detached mode', short: 'd', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":418,"end":423,"loc":{"start":{"line":14,"column":33,"index":418},"end":{"line":14,"column":38,"index":423}},"value":false}}]}, validator: '(val) => true' },
+        'readonly': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in readonly mode', short: 'r', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":547,"end":552,"loc":{"start":{"line":18,"column":33,"index":547},"end":{"line":18,"column":38,"index":552}},"value":false}}]}, validator: '(val) => true' },
+        'name': { type: 'z.string.max.default', required: true, hasDefault: true, default: "delphis", description: 'Name of the container', short: 'n', schema: {"type":"zod","method":"default","args":[{"type":"literal","value":"delphis"}]}, validator: '(val) => true' }
       },
       path: '../cli/commands/share'
     },
@@ -53,11 +45,6 @@ const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
       name: 'stop',
       description: 'Stop a remote development environment',
       path: '../cli/commands/stop'
-    },
-  'version': {
-      name: 'version',
-      description: 'Show version information',
-      path: '../cli/commands/version'
     }
 } as const
 

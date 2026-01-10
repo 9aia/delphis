@@ -163,7 +163,7 @@ describe('openRemoteCode', () => {
 
     openRemoteCode({ host, codeArgs })
 
-    // minimist parses flags as { 'new-window': true, 'wait': true }
+    // mri parses flags as { 'new-window': true, 'wait': true }
     // cleanCodeArgs converts them to ['--new-window', 'true', '--wait', 'true']
     expect(mockSpawn).toHaveBeenCalledWith({
       cmd: [
@@ -187,7 +187,7 @@ describe('openRemoteCode', () => {
 
     openRemoteCode({ host, codeArgs })
 
-    // minimist parses as { remote: 'some-remote', 'new-window': true }
+    // mri parses as { remote: 'some-remote', 'new-window': true }
     // cleanCodeArgs removes 'remote' and converts to ['--new-window', 'true']
     expect(mockSpawn).toHaveBeenCalledWith({
       cmd: [

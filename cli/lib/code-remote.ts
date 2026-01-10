@@ -1,4 +1,4 @@
-import minimist from 'minimist'
+import mri from 'mri'
 import { z } from 'zod'
 import { env } from '../env'
 import { linuxUsernameSchema, tcpPortSchema } from './zod'
@@ -69,7 +69,7 @@ export type CodeArgs = z.infer<typeof codeArgsSchema>
 function cleanCodeArgs(codeArgs: CodeArgs): CodeArgs {
   const safeCodeArgs = codeArgsSchema.parse(codeArgs)
 
-  const argv = minimist(safeCodeArgs)
+  const argv = mri(safeCodeArgs)
 
   // Remove the `remote` key
   delete argv.remote

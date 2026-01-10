@@ -1,27 +1,21 @@
+#!/usr/bin/env bun
 import { createCLI } from '@bunli/core'
 import pkg from '../package.json'
-import helpCommand from './commands/help'
-import joinCommand from './commands/join'
-import postinstallCommand from './commands/postinstall'
-import shareCommand from './commands/share'
-import stopCommand from './commands/stop'
-import versionCommand from './commands/version'
-import { createLogger } from './lib/logger'
+import manifest from './manifest'
 
-export const logger = createLogger()
+async function main() {
+  const cli = await createCLI({
+    name: pkg.name,
+    version: pkg.version,
+    description: pkg.description,
+  })
 
-const cli = await createCLI({
-  name: pkg.name,
-  version: pkg.version,
-  description: pkg.description,
-})
+  await cli.load(manifest)
 
-// Register commands
-cli.command(helpCommand)
-cli.command(versionCommand)
-cli.command(joinCommand)
-cli.command(shareCommand)
-cli.command(stopCommand)
-cli.command(postinstallCommand)
+  // Loads manifest if configured)
+  await cli.init()
 
-await cli.run()
+  await cli.run()
+}
+
+main()

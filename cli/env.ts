@@ -21,6 +21,8 @@ const envSchema = z.object({
 
   // Editor settings
   DELPHIS_FOLDER: z.string().default('./delphis'),
+
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
 })
 
 /**

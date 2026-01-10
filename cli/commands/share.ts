@@ -1,8 +1,11 @@
 import os from 'node:os'
-import process from 'node:process'
+import process, { env } from 'node:process'
 import { defineCommand, option } from '@bunli/core'
+import { intro, log, outro } from '@clack/prompts'
+import c from 'chalk'
 import { z } from 'zod'
-import { logger } from '../main'
+import pkg from '../../package.json'
+import { logger } from '../logger'
 
 export default defineCommand({
   name: 'share',
@@ -16,9 +19,19 @@ export default defineCommand({
       z.coerce.boolean().default(false),
       { description: 'Run in readonly mode', short: 'r' },
     ),
+    name: option(
+      z.string().max(2).default('delphis'),
+      { description: 'Name of the container', short: 'n' },
+    ),
   },
-  handler: async ({ flags }) => {
-    logger.info('Sharing Delphis...')
+  handler: async ({ flags, positional }) => {
+    intro(c.inverse(pkg.name))
+
+    log.info('Sharing Delphis...')
+    logger.debug(`NODE_ENV: ${env.NODE_ENV ?? 'undefined'}`)
+
+    outro(c.green('Delphis is now sharing your environment.'))
+    return
 
     // TODO: implement readonly mode
 

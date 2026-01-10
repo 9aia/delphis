@@ -2,6 +2,7 @@
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
+  "editor.indentSize": 2,
 
   // Auto fix
   "editor.codeActionsOnSave": {
@@ -49,9 +50,10 @@
     "postcss"
   ],
 
+  "typescript.tsdk": "node_modules/typescript/lib",
+
   "files.exclude": {
-    "**/node_modules": true,
-    "**/.bunli": true
+    "**/node_modules": true
   },
 
   "explorer.fileNesting.enabled": true,

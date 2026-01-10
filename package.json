@@ -3,42 +3,45 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "bun@1.3.5",
   "description": "A CLI for remote dev environments with Tailscale & VS Code Remote SSH.",
-  "module": "index.ts",
+  "module": "./cli/main.ts",
   "bin": {
-    "delphis": "./dist/index.js"
+    "delphis": "./dist/delphis"
   },
   "scripts": {
-    "postinstall": "bunli generate",
-    "dev": "bun run --watch ./cli/main.ts",
-    "build": "bunli build",
+    "postinstall": "bun run typegen",
+    "dev": "./scripts/dev.ts",
+    "build": "./scripts/build.ts",
     "start": "bun run ./cli/main.ts",
-    "preview": "./dist/main",
+    "preview": "./scripts/preview.ts",
+    "typegen": "./scripts/typegen.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "bun --bun tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@bunli/core": "^0.4.0",
-    "bunli": "^0.4.0",
-    "minimist": "^1.2.8",
+    "@clack/prompts": "^0.11.0",
+    "chalk": "^5.6.2",
+    "chalk-template": "^1.1.2",
+    "mri": "^1.2.0",
     "ofetch": "^1.5.1",
+    "pino": "^10.1.1",
     "zod": "^4.3.5"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.3",
+    "@bunli/generator": "^0.4.0",
     "@bunli/test": "^0.2.0",
     "@types/bun": "^1.3.5",
-    "@types/minimist": "^1.2.5",
     "eslint": "^9.39.2",
     "eslint-plugin-format": "^1.1.0"
-  },
-  "bunli": {
-    "entry": "./cli/main.ts",
-    "outDir": "./dist"
   }
 }
