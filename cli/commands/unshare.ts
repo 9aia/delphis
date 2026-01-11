@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { defineCommand, option } from '@bunli/core'
-import { log, outro } from '@clack/prompts'
+import { log, outro, spinner } from '@clack/prompts'
 import c from 'chalk'
 import z from 'zod'
 import { result } from '@/shared/lib/neverthrow'
@@ -47,7 +47,8 @@ export default defineCommand({
       process.exit(1)
     }
 
-    log.info('Stopping Delphis container...')
+    const s = spinner()
+    s.start('Stopping Delphis container...')
 
     const stopResult = await result(() => container.stop())
 
@@ -55,6 +56,8 @@ export default defineCommand({
       log.error(`Failed to stop Delphis container: ${stopResult.error}`)
       process.exit(1)
     }
+
+    s.stop('Success')
 
     outro(c.green('Delphis container has been stopped.'))
   }),

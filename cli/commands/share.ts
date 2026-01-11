@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { defineCommand } from '@bunli/core'
-import { log, outro } from '@clack/prompts'
+import { log, outro, spinner } from '@clack/prompts'
 import c from 'chalk'
 import { result } from '@/shared/lib/neverthrow'
 import { getContainer } from '../docker'
@@ -35,7 +35,8 @@ export default defineCommand({
       }
     }
 
-    log.info('Starting Delphis container...')
+    const s = spinner()
+    s.start('Starting Delphis container...')
 
     const startResult = await result(() => container.start())
 
@@ -43,6 +44,8 @@ export default defineCommand({
       log.error(`Failed to start Delphis container: ${startResult.error}`)
       process.exit(1)
     }
+
+    s.stop('Success')
 
     outro(c.green('Delphis is now sharing your environment.'))
   }),
