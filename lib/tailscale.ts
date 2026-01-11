@@ -1,7 +1,7 @@
-import type { TailscaleDevicesResponse } from '../types/tailscale/devices'
+import type { Tailscale } from '../types/tailscale'
 import os from 'node:os'
 import { ofetch } from 'ofetch'
-import { cliEnv } from '../env/cli'
+import { cliEnv } from '../cli/env'
 
 const TAILSCALE_API_URL = 'https://api.tailscale.com/api/v2'
 
@@ -66,7 +66,7 @@ export async function isTailscaleIpOnline(ip: string) {
     return false
   }
 
-  const devices = await fetchTailscale<TailscaleDevicesResponse>(
+  const devices = await fetchTailscale<Tailscale.DevicesResponse>(
     `/tailnet/${cliEnv.DELPHIS_TAILSCALE_TAILNET_ID}/devices`,
   )
 
@@ -82,7 +82,7 @@ export async function isTailscaleIpOnline(ip: string) {
 }
 
 export async function getTailscaleDevices() {
-  const devices = await fetchTailscale<TailscaleDevicesResponse>(
+  const devices = await fetchTailscale<Tailscale.DevicesResponse>(
     `/tailnet/${cliEnv.DELPHIS_TAILSCALE_TAILNET_ID}/devices`,
   )
 

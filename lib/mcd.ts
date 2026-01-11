@@ -1,14 +1,20 @@
 import type dgram from 'node:dgram'
-import type { TailscaleDevice } from '@/types/tailscale/devices'
+import type { Tailscale } from '@/types/tailscale'
 import { Buffer } from 'node:buffer'
-import { sharedEnv } from '@/env/shared'
+import { sharedEnv } from '@/shared/env'
 
 const PORT = sharedEnv.DELPHIS_PORT
 
+export interface Agent {
+  ip: string
+  hostname: string
+  os: string
+}
+
 interface BindSocketParams {
   socket: dgram.Socket
-  tailscaleDevices: TailscaleDevice[]
-  onPacketSent?: (device: TailscaleDevice) => void
+  tailscaleDevices: Tailscale.Device[]
+  onPacketSent?: (device: Tailscale.Device) => void
   onFinish?: () => void
 }
 
@@ -58,12 +64,8 @@ export function sendDiscoveryPackets(params: BindSocketParams) {
 
 interface OnDiscoveryMessageParams {
   socket: dgram.Socket
-  tailscaleDevices: TailscaleDevice[]
-  onNewAgent: (agent: {
-    hostname: string
-    os: string
-    ip: string
-  }) => void
+  tailscaleDevices: Tailscale.Device[]
+  onNewAgent: (agent: Agent) => void
 }
 
 export function onDiscoveryMessage(params: OnDiscoveryMessageParams) {

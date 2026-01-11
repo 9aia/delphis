@@ -2,7 +2,7 @@ import os from 'node:os'
 import process from 'node:process'
 import Docker from 'dockerode'
 import { err, ok } from 'neverthrow'
-import { sharedEnv } from '@/env/shared'
+import { sharedEnv } from '@/shared/env'
 import { result } from '@/shared/lib/neverthrow'
 
 export const DELPHIS_IMAGE = 'delphis'

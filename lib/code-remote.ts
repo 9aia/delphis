@@ -1,7 +1,7 @@
 import mri from 'mri'
 import { z } from 'zod'
-import { cliEnv } from '../env/cli'
-import { sharedEnv } from '../env/shared'
+import { cliEnv } from '../cli/env'
+import { sharedEnv } from '../shared/env'
 import { linuxUsernameSchema, tcpPortSchema } from './zod'
 
 export abstract class CodeRemoteError extends Error {}

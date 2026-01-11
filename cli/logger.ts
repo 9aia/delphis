@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import pino from 'pino'
-import { sharedEnv } from '@/env/shared'
+import { sharedEnv } from '@/shared/env'
 
 // Ensure logs directory exists
 fs.mkdirSync('logs', { recursive: true })

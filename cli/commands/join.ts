@@ -1,9 +1,9 @@
-import type { Agent } from '@/types/delphis/agent'
+import type { Agent } from '@/lib/mcd'
 import dgram from 'node:dgram'
 import { defineCommand } from '@bunli/core'
 import { intro, log, outro, select, spinner } from '@clack/prompts'
 import c from 'chalk'
-import { onDiscoveryMessage, sendDiscoveryPackets } from '@/lib/mcd/socket'
+import { onDiscoveryMessage, sendDiscoveryPackets } from '@/lib/mcd'
 import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '../../lib/code-remote'
 import { isBinaryInstalled } from '../../lib/os'
 import { getTailscaleDevices, isTailscaleUp } from '../../lib/tailscale'
@@ -43,6 +43,7 @@ export default defineCommand({
     const spin = spinner()
     spin.start()
 
+    // TODO: refactor into a single function with callbacks
     const agents: Agent[] = []
     const socket = dgram.createSocket('udp4')
 
