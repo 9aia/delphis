@@ -42,20 +42,20 @@ export default defineCommand({
     const args = ['docker', 'run', '-d']
     args.push(
       '--name',
-      'delphis-mcd',
+      'delphis',
       '-p',
       '22444:22444/tcp',
       '-p',
       '22444:22444/udp',
       '-e',
-      `USER=${sharedEnv.DELPHIS_USERNAME}`,
+      `USERNAME=${sharedEnv.DELPHIS_USERNAME}`,
       '-e',
       `PASSWORD=${sharedEnv.DELPHIS_PASSWORD}`,
       '-v',
       `${os.homedir()}/.gitconfig:/home/${sharedEnv.DELPHIS_USERNAME}/.gitconfig:ro`,
       '-v',
       `${process.cwd()}:/delphis`,
-      'delphis-mcd',
+      'delphis',
     )
 
     const proc = Bun.spawn(args, {

@@ -1,15 +1,15 @@
-import { Buffer } from 'node:buffer'
+import type { Agent } from '@/types/delphis/agent'
 import dgram from 'node:dgram'
 import { defineCommand } from '@bunli/core'
-import { intro, log, outro, progress } from '@clack/prompts'
+import { intro, log, outro, select, spinner } from '@clack/prompts'
 import c from 'chalk'
-import { sharedEnv } from '@/env/shared'
+import { onDiscoveryMessage, sendDiscoveryPackets } from '@/lib/mcd/socket'
 import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '../../lib/code-remote'
 import { isBinaryInstalled } from '../../lib/os'
 import { getTailscaleDevices, isTailscaleUp } from '../../lib/tailscale'
 import pkg from '../../package.json'
 
-const PORT = sharedEnv.DELPHIS_PORT
+const DISCOVERY_TIMEOUT_MS = 3000
 
 export default defineCommand({
   name: 'join',
@@ -17,90 +17,96 @@ export default defineCommand({
   handler: async ({ positional }) => {
     intro(c.inverse(pkg.name))
 
-    const tailscaleInstalled = await isBinaryInstalled('tailscale')
+    const initPromises = [
+      isBinaryInstalled('tailscale'),
+      isTailscaleUp(),
+      getTailscaleDevices(),
+    ] as const
+
+    const [tailscaleInstalled, tailscaleUp, tailscaleDevices] = await Promise.all(initPromises)
 
     if (!tailscaleInstalled) {
       log.error('Tailscale is not installed. Please install Tailscale and try again.')
       return
     }
 
-    const tailscaleUp = await isTailscaleUp()
-
     if (!tailscaleUp) {
       log.error('Tailscale is not up. Please start Tailscale and try again.')
       return
     }
 
-    const tailscaleDevices = await getTailscaleDevices()
-
-    if (tailscaleDevices.length === 0) {
+    if (!tailscaleDevices.length) {
       log.error('No connected Tailscale devices found. Please ensure the devices are added to the tailnet.')
       return
     }
 
+    const spin = spinner()
+    spin.start()
+
+    const agents: Agent[] = []
     const socket = dgram.createSocket('udp4')
 
-    const prog = progress({
-      style: 'heavy',
-      max: tailscaleDevices.length,
-      size: 0,
+    sendDiscoveryPackets({
+      socket,
+      tailscaleDevices,
+      onPacketSent: (device) => {
+        spin.message(`Sent discovery packet to ${device.hostname}`)
+      },
+      onFinish: () => {
+        spin.message('Discover packets sent. Waiting for agents to respond...')
+      },
     })
 
-    socket.bind(() => {
-      prog.start('Discovering hosts on Tailscale network...')
-
-      for (const device of tailscaleDevices) {
-        if (!device.connectedToControl) {
-          prog.advance(1)
-
-          continue
-        }
-
-        if (device.addresses.includes(':'))
-          continue
-
-        for (const address of device.addresses) {
-          if (address.includes(':'))
-            continue
-
-          socket.send(
-            Buffer.from('DISCOVER_AGENTS'),
-            PORT,
-            address,
-            (err) => {
-              if (err) {
-                console.error(`Failed to send to ${device.hostname} (${address}):`, err.message)
-              }
-            },
-          )
-        }
-
-        prog.advance(1)
-        break
-      }
+    onDiscoveryMessage({
+      socket,
+      tailscaleDevices,
+      onNewAgent: agent => agents.push(agent),
     })
 
-    // TODO: discover the host on tailnet. they will have the port listening
+    const onDiscoverTimeout = async () => {
+      spin.clear()
 
-    const host = 'localhost'
+      const firstAgent = agents[0]
 
-    const codeArgs = positional
+      if (!firstAgent) {
+        outro(c.yellow('No agents found. Please ensure that there are remote development environments available to join.'))
 
-    try {
-      openRemoteCode({
-        host,
-        codeArgs,
-      })
-    }
-    catch (error) {
-      if (error instanceof CodeRemotePasswordWithoutUsernameError) {
-        log.warn(error.message)
+        socket.close()
+        return
       }
-      else {
-        throw error
+
+      let host = firstAgent.ip
+
+      if (agents.length > 1) {
+        host = await select({
+          message: 'Select a agent to join:',
+          options: agents.map(agent => ({
+            label: `${agent.hostname} - ${agent.os} - ${agent.ip}`,
+            value: agent.ip,
+          })),
+        }) as string
       }
+
+      const codeArgs = positional
+
+      try {
+        openRemoteCode({
+          host,
+          codeArgs,
+        })
+      }
+      catch (error) {
+        if (error instanceof CodeRemotePasswordWithoutUsernameError) {
+          log.warn(error.message)
+        }
+        else {
+          throw error
+        }
+      }
+
+      outro(c.green('Joined the remote development environment.'))
     }
 
-    outro(c.green('Joined the remote development environment.'))
+    setTimeout(async () => onDiscoverTimeout(), DISCOVERY_TIMEOUT_MS)
   },
 })

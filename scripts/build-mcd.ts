@@ -17,7 +17,7 @@ try {
   `
 
   await Bun.$`
-    docker build -f ./mcd/Dockerfile -t delphis-mcd .
+    docker build -f ./mcd/Dockerfile -t delphis .
   `
 
   console.log('Built successfully')

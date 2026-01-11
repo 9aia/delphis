@@ -1,14 +1,14 @@
 import type { TailscaleDevicesResponse } from '../types/tailscale/devices'
 import os from 'node:os'
 import { ofetch } from 'ofetch'
-import { sharedEnv } from '../env/shared'
+import { cliEnv } from '../env/cli'
 
 const TAILSCALE_API_URL = 'https://api.tailscale.com/api/v2'
 
 const fetchTailscale = ofetch.create({
   baseURL: TAILSCALE_API_URL,
   headers: {
-    Authorization: `Bearer ${sharedEnv.DELPHIS_TAILSCALE_API_ACCESS_TOKEN}`,
+    Authorization: `Bearer ${cliEnv.DELPHIS_TAILSCALE_API_ACCESS_TOKEN}`,
   },
 })
 
@@ -67,7 +67,7 @@ export async function isTailscaleIpOnline(ip: string) {
   }
 
   const devices = await fetchTailscale<TailscaleDevicesResponse>(
-    `/tailnet/${sharedEnv.DELPHIS_TAILSCALE_TAILNET_ID}/devices`,
+    `/tailnet/${cliEnv.DELPHIS_TAILSCALE_TAILNET_ID}/devices`,
   )
 
   for (const device of devices.devices) {
@@ -83,7 +83,7 @@ export async function isTailscaleIpOnline(ip: string) {
 
 export async function getTailscaleDevices() {
   const devices = await fetchTailscale<TailscaleDevicesResponse>(
-    `/tailnet/${sharedEnv.DELPHIS_TAILSCALE_TAILNET_ID}/devices`,
+    `/tailnet/${cliEnv.DELPHIS_TAILSCALE_TAILNET_ID}/devices`,
   )
 
   return devices.devices

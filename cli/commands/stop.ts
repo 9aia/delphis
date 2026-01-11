@@ -20,7 +20,7 @@ export default defineCommand({
       stderr: 'inherit',
     })
 
-    const rmArgs = ['docker', 'rm', '-f', 'delphis-mcd']
+    const rmArgs = ['docker', 'rm', '-f', 'delphis']
 
     const rmProc = Bun.spawn(rmArgs, {
       cwd: process.cwd(),

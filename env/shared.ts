@@ -7,10 +7,6 @@ import { tcpPortSchema } from '../lib/zod'
  * Bun automatically loads .env files, so no need for dotenv
  */
 const envSchema = z.object({
-  // Tailscale API Auth
-  DELPHIS_TAILSCALE_API_ACCESS_TOKEN: z.string().nonempty(),
-  DELPHIS_TAILSCALE_TAILNET_ID: z.string().nonempty(),
-
   // SSH connection settings
   DELPHIS_USERNAME: z.string().nullable().default('delphis'),
   DELPHIS_PASSWORD: z.string().optional(),

@@ -4,28 +4,21 @@
 import type { Command, CLI, GeneratedOptionMeta, RegisteredCommands, CommandOptions, GeneratedCommandMeta } from '@bunli/core'
 import { createGeneratedHelpers, registerGeneratedStore } from '@bunli/core'
 
-import Join from '../cli/commands/join.js'
 import Postinstall from '../cli/commands/postinstall.js'
 import Share from '../cli/commands/share.js'
 import Stop from '../cli/commands/stop.js'
 
 // Narrow list of command names to avoid typeof-cycles in types
-const names = ['join', 'postinstall', 'share', 'stop'] as const
+const names = ['postinstall', 'share', 'stop'] as const
 type GeneratedNames = typeof names[number]
 
 const modules: Record<GeneratedNames, Command<any>> = {
-  'join': Join,
   'postinstall': Postinstall,
   'share': Share,
   'stop': Stop
 } as const
 
 const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
-  'join': {
-      name: 'join',
-      description: 'Join a remote development environment',
-      path: '../cli/commands/join'
-    },
   'postinstall': {
       name: 'postinstall',
       description: 'Run postinstall command',

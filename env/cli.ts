@@ -6,6 +6,10 @@ import { z } from 'zod'
  * Bun automatically loads .env files, so no need for dotenv
  */
 const envSchema = z.object({
+  // Tailscale API Auth
+  DELPHIS_TAILSCALE_API_ACCESS_TOKEN: z.string().nonempty(),
+  DELPHIS_TAILSCALE_TAILNET_ID: z.string().nonempty(),
+
   // Editor settings
   DELPHIS_LAUNCH_EDITOR: z.string().default('code'),
 })

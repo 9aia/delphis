@@ -2,26 +2,26 @@
 set -e
 
 # Default values
-USER=${USER:-root}
+USERNAME=${USERNAME:-root}
 PASSWORD=${PASSWORD:-password}
 
-if [ "$USER" = "root" ]; then
+if [ "$USERNAME" = "root" ]; then
     echo "Root cannot be used as user to delphis!"
     exit 1
 fi
 
 # Create user only if it does not exist
-if ! id "$USER" >/dev/null 2>&1; then
-    useradd -m -s /bin/bash "$USER"
-    echo "$USER:$PASSWORD" | chpasswd
+if ! id "$USERNAME" >/dev/null 2>&1; then
+    useradd -m -s /bin/bash "$USERNAME"
+    echo "$USERNAME:$PASSWORD" | chpasswd
 fi
 
 # Permissions
 chmod -R 777 /delphis
-chown -R "$USER":"$USER" /delphis
+chown -R "$USERNAME":"$USERNAME" /delphis
 
 # Start SSH in background
 /usr/sbin/sshd
 
-# Start delphis-mcd in foreground (PID 1)
+# Start delphis in foreground (PID 1)
 exec /delphis-mcd
