@@ -59,7 +59,7 @@ DELPHIS_PASSWORD=your_password  # Optional, for password authentication
 DELPHIS_PORT=22444
 
 # Optional: Remote folder path
-DELPHIS_FOLDER=./delphis
+DELPHIS_FOLDER=/delphis
 ```
 
 ### Getting Tailscale API Credentials
@@ -204,7 +204,7 @@ delphis/
 | `DELPHIS_USERNAME`                   | No       | `delphis`   | SSH username               |
 | `DELPHIS_PASSWORD`                   | No       | -           | SSH password (optional)    |
 | `DELPHIS_PORT`                       | No       | `22444`     | SSH port                   |
-| `DELPHIS_FOLDER`                     | No       | `./delphis` | Remote folder path         |
+| `DELPHIS_FOLDER`                     | No       | `/delphis` | Remote folder path         |
 
 ## Troubleshooting
 

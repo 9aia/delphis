@@ -13,7 +13,7 @@ const envSchema = z.object({
   DELPHIS_PORT: tcpPortSchema.default(22444),
 
   // Root project container folder
-  DELPHIS_FOLDER: z.string().default('./delphis'),
+  DELPHIS_FOLDER: z.string().default('/delphis'),
 
   NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
 })

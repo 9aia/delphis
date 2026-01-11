@@ -4,21 +4,30 @@
 import type { Command, CLI, GeneratedOptionMeta, RegisteredCommands, CommandOptions, GeneratedCommandMeta } from '@bunli/core'
 import { createGeneratedHelpers, registerGeneratedStore } from '@bunli/core'
 
+import Join from '../cli/commands/join.js'
 import Postinstall from '../cli/commands/postinstall.js'
 import Share from '../cli/commands/share.js'
-import Stop from '../cli/commands/stop.js'
+import Status from '../cli/commands/status.js'
+import Unshare from '../cli/commands/unshare.js'
 
 // Narrow list of command names to avoid typeof-cycles in types
-const names = ['postinstall', 'share', 'stop'] as const
+const names = ['join', 'postinstall', 'share', 'status', 'unshare'] as const
 type GeneratedNames = typeof names[number]
 
 const modules: Record<GeneratedNames, Command<any>> = {
+  'join': Join,
   'postinstall': Postinstall,
   'share': Share,
-  'stop': Stop
+  'status': Status,
+  'unshare': Unshare
 } as const
 
 const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
+  'join': {
+      name: 'join',
+      description: 'Join a remote development environment',
+      path: '../cli/commands/join'
+    },
   'postinstall': {
       name: 'postinstall',
       description: 'Run postinstall command',
@@ -27,17 +36,20 @@ const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
   'share': {
       name: 'share',
       description: 'Share a remote development environment',
-      options: {
-        'detach': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in detached mode', short: 'd', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":512,"end":517,"loc":{"start":{"line":16,"column":33,"index":512},"end":{"line":16,"column":38,"index":517}},"value":false}}]}, validator: '(val) => true' },
-        'readonly': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in readonly mode', short: 'r', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":641,"end":646,"loc":{"start":{"line":20,"column":33,"index":641},"end":{"line":20,"column":38,"index":646}},"value":false}}]}, validator: '(val) => true' },
-        'name': { type: 'z.string.max.default', required: true, hasDefault: true, default: "delphis", description: 'Name of the container', short: 'n', schema: {"type":"zod","method":"default","args":[{"type":"literal","value":"delphis"}]}, validator: '(val) => true' }
-      },
       path: '../cli/commands/share'
     },
-  'stop': {
-      name: 'stop',
-      description: 'Stop a remote development environment',
-      path: '../cli/commands/stop'
+  'status': {
+      name: 'status',
+      description: 'Check if Delphis is running',
+      path: '../cli/commands/status'
+    },
+  'unshare': {
+      name: 'unshare',
+      description: 'Unshare your current development environment',
+      options: {
+        'force': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Force stop the container', short: 'f', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":526,"end":531,"loc":{"start":{"line":16,"column":33,"index":526},"end":{"line":16,"column":38,"index":531}},"value":false}}]}, validator: '(val) => true' }
+      },
+      path: '../cli/commands/unshare'
     }
 } as const
 

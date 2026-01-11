@@ -3,7 +3,8 @@ import type { CommandManifest } from '@bunli/core'
 const manifest: CommandManifest = {
   join: () => import('./commands/join'),
   share: () => import('./commands/share'),
-  stop: () => import('./commands/stop'),
+  unshare: () => import('./commands/unshare'),
+  status: () => import('./commands/status'),
   postinstall: () => import('./commands/postinstall'),
 }
 
