@@ -1,11 +1,10 @@
-import type Docker from 'dockerode'
 import process from 'node:process'
 import { defineCommand, option } from '@bunli/core'
 import { log, outro } from '@clack/prompts'
 import c from 'chalk'
 import z from 'zod'
 import { result } from '@/shared/lib/neverthrow'
-import { container } from '../docker'
+import { getContainer } from '../docker'
 import { dockerHandler } from '../handlers/docker'
 
 export default defineCommand({
@@ -18,15 +17,24 @@ export default defineCommand({
     ),
   },
   handler: dockerHandler(async () => {
-    const inspectResult = await result(container.inspect)
+    const containerResult = await getContainer({ createIfNotExists: false })
+
+    if (!containerResult.isOk()) {
+      log.error(`Failed to get Delphis container: ${containerResult.error}`)
+      process.exit(1)
+    }
+
+    const container = containerResult.value
+
+    if (!container) {
+      log.error('Delphis container is not running, because it does not exist.')
+      process.exit(1)
+    }
+
+    const inspectResult = await result(() => container.inspect())
 
     if (inspectResult.isErr()) {
       const error = inspectResult.error
-
-      if (error === 'No such container') {
-        log.error('Delphis container is not running, because it does not exist.')
-        process.exit(1)
-      }
 
       log.error(`Failed to inspect Delphis container: ${error}`)
       process.exit(1)
@@ -41,7 +49,7 @@ export default defineCommand({
 
     log.info('Stopping Delphis container...')
 
-    const stopResult = await result(container.stop)
+    const stopResult = await result(() => container.stop())
 
     if (stopResult.isErr()) {
       log.error(`Failed to stop Delphis container: ${stopResult.error}`)

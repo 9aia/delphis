@@ -1,25 +1,30 @@
 import process from 'node:process'
-import { defineCommand, option } from '@bunli/core'
+import { defineCommand } from '@bunli/core'
 import { log, outro } from '@clack/prompts'
 import c from 'chalk'
-import { z } from 'zod'
 import { result } from '@/shared/lib/neverthrow'
-import { container } from '../docker'
+import { getContainer } from '../docker'
 import { dockerHandler } from '../handlers/docker'
 
 export default defineCommand({
   name: 'share',
   description: 'Share a remote development environment',
   handler: dockerHandler(async () => {
-    const inspectResult = await result(container.inspect)
+    const containerResult = await getContainer({ createIfNotExists: true })
+
+    if (!containerResult.isOk()) {
+      log.error(`Failed to get Delphis container: ${containerResult.error}`)
+      process.exit(1)
+    }
+
+    const container = containerResult.value!
+
+    const inspectResult = await result(() => container.inspect())
 
     if (inspectResult.isErr()) {
       const error = inspectResult.error
-
-      if (error !== 'No such container') {
-        log.error(`Failed to inspect Delphis container: ${error}`)
-        process.exit(1)
-      }
+      log.error(`Failed to inspect Delphis container: ${error}`)
+      process.exit(1)
     }
     else {
       const info = inspectResult.value
@@ -32,7 +37,7 @@ export default defineCommand({
 
     log.info('Starting Delphis container...')
 
-    const startResult = await result(container.start)
+    const startResult = await result(() => container.start())
 
     if (startResult.isErr()) {
       log.error(`Failed to start Delphis container: ${startResult.error}`)

@@ -3,23 +3,32 @@ import { defineCommand } from '@bunli/core'
 import { log, outro } from '@clack/prompts'
 import c from 'chalk'
 import { result } from '@/shared/lib/neverthrow'
-import { container } from '../docker'
+import { getContainer } from '../docker'
 import { dockerHandler } from '../handlers/docker'
 
 export default defineCommand({
   name: 'status',
   description: 'Check if Delphis is running',
   handler: dockerHandler(async () => {
-    const inspectResult = await result(container.inspect)
+    const containerResult = await getContainer({ createIfNotExists: false })
+
+    if (!containerResult.isOk()) {
+      log.error(`Failed to get Delphis container: ${containerResult.error}`)
+      process.exit(1)
+    }
+
+    const container = containerResult.value
+
+    if (!container) {
+      log.info('Delphis container does not exist.')
+      outro(c.yellow('Status: Not running'))
+      return
+    }
+
+    const inspectResult = await result(() => container.inspect())
 
     if (inspectResult.isErr()) {
       const error = inspectResult.error
-
-      if (error === 'No such container') {
-        log.info('Delphis container does not exist.')
-        outro(c.yellow('Status: Not running'))
-        return
-      }
 
       log.error(`Failed to inspect Delphis container: ${error}`)
       process.exit(1)
