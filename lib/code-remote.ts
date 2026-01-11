@@ -1,6 +1,7 @@
 import mri from 'mri'
 import { z } from 'zod'
-import { env } from '../env'
+import { cliEnv } from '../env/cli'
+import { sharedEnv } from '../env/shared'
 import { linuxUsernameSchema, tcpPortSchema } from './zod'
 
 export abstract class CodeRemoteError extends Error {}
@@ -33,9 +34,9 @@ export type SshRemoteAuthorityOptions = z.infer<typeof buildSshRemoteAuthoritySc
 export function buildSshRemoteAuthority(options: SshRemoteAuthorityOptions): string {
   const {
     host,
-    port = env.DELPHIS_PORT,
-    username = env.DELPHIS_USERNAME,
-    password = env.DELPHIS_PASSWORD,
+    port = sharedEnv.DELPHIS_PORT,
+    username = sharedEnv.DELPHIS_USERNAME,
+    password = sharedEnv.DELPHIS_PASSWORD,
   } = buildSshRemoteAuthoritySchema.parse(options)
 
   let authority = `ssh-remote`
@@ -102,8 +103,8 @@ export type OpenRemoteCodeOptions = z.infer<typeof openRemoteCodeSchema>
 export function openRemoteCode(options: OpenRemoteCodeOptions) {
   const { host, codeArgs } = openRemoteCodeSchema.parse(options)
 
-  const EDITOR_BIN = env.DELPHIS_LAUNCH_EDITOR
-  const FOLDER = env.DELPHIS_FOLDER
+  const EDITOR_BIN = cliEnv.DELPHIS_LAUNCH_EDITOR
+  const FOLDER = sharedEnv.DELPHIS_FOLDER
 
   const authority = buildSshRemoteAuthority({
     host,

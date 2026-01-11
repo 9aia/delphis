@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { z } from 'zod'
-import { tcpPortSchema } from './lib/zod'
+import { tcpPortSchema } from '../lib/zod'
 
 /**
  * Environment variable schema using Zod
@@ -11,15 +11,12 @@ const envSchema = z.object({
   DELPHIS_TAILSCALE_API_ACCESS_TOKEN: z.string().nonempty(),
   DELPHIS_TAILSCALE_TAILNET_ID: z.string().nonempty(),
 
-  // Editor settings
-  DELPHIS_LAUNCH_EDITOR: z.string().default('code'),
-
   // SSH connection settings
   DELPHIS_USERNAME: z.string().nullable().default('delphis'),
   DELPHIS_PASSWORD: z.string().optional(),
   DELPHIS_PORT: tcpPortSchema.default(22444),
 
-  // Editor settings
+  // Root project container folder
   DELPHIS_FOLDER: z.string().default('./delphis'),
 
   NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
@@ -29,7 +26,7 @@ const envSchema = z.object({
  * Validated environment variables
  * Throws an error if validation fails
  */
-export const env = envSchema.parse(process.env)
+export const sharedEnv = envSchema.parse(process.env)
 
 /**
  * Type-safe environment variables

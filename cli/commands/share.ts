@@ -4,9 +4,9 @@ import { defineCommand, option } from '@bunli/core'
 import { intro, log, outro } from '@clack/prompts'
 import c from 'chalk'
 import { z } from 'zod'
+import { sharedEnv } from '../../env/shared'
+import { isBinaryInstalled } from '../../lib/os'
 import pkg from '../../package.json'
-import { env } from '../env'
-import { isBinaryInstalled } from '../lib/os'
 
 export default defineCommand({
   name: 'share',
@@ -42,18 +42,20 @@ export default defineCommand({
     const args = ['docker', 'run', '-d']
     args.push(
       '--name',
-      'delphis',
-      '--network',
-      'host',
+      'delphis-mcd',
+      '-p',
+      '22444:22444/tcp',
+      '-p',
+      '22444:22444/udp',
       '-e',
-      `USER=${env.DELPHIS_USERNAME}`,
+      `USER=${sharedEnv.DELPHIS_USERNAME}`,
       '-e',
-      `PASSWORD=${env.DELPHIS_PASSWORD}`,
+      `PASSWORD=${sharedEnv.DELPHIS_PASSWORD}`,
       '-v',
-      `${os.homedir()}/.gitconfig:/home/${env.DELPHIS_USERNAME}/.gitconfig:ro`,
+      `${os.homedir()}/.gitconfig:/home/${sharedEnv.DELPHIS_USERNAME}/.gitconfig:ro`,
       '-v',
       `${process.cwd()}:/delphis`,
-      'delphis',
+      'delphis-mcd',
     )
 
     const proc = Bun.spawn(args, {

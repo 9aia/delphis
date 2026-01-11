@@ -6,9 +6,11 @@ RUN mkdir /var/run/sshd /delphis
 
 RUN chmod -R 777 /delphis
 
-RUN echo "Port 2222" >> /etc/ssh/sshd_config
+RUN echo "Port 22444" >> /etc/ssh/sshd_config
 
-COPY start.sh /start.sh
+COPY ./mcd/start.sh ./start.sh
+COPY ./dist/delphis-mcd ./delphis-mcd
+
 RUN chmod +x /start.sh
 
 CMD ["./start.sh"]

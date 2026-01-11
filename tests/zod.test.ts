@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { linuxUsernameSchema, tcpPortSchema } from '../cli/lib/zod'
+import { linuxUsernameSchema, tcpPortSchema } from '../lib/zod'
 
 describe('usernameSchema', () => {
   test('should accept valid Linux username starting with letter', () => {

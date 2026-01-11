@@ -35,8 +35,8 @@ const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
       name: 'share',
       description: 'Share a remote development environment',
       options: {
-        'detach': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in detached mode', short: 'd', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":447,"end":452,"loc":{"start":{"line":15,"column":33,"index":447},"end":{"line":15,"column":38,"index":452}},"value":false}}]}, validator: '(val) => true' },
-        'readonly': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in readonly mode', short: 'r', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":576,"end":581,"loc":{"start":{"line":19,"column":33,"index":576},"end":{"line":19,"column":38,"index":581}},"value":false}}]}, validator: '(val) => true' },
+        'detach': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in detached mode', short: 'd', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":512,"end":517,"loc":{"start":{"line":16,"column":33,"index":512},"end":{"line":16,"column":38,"index":517}},"value":false}}]}, validator: '(val) => true' },
+        'readonly': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Run in readonly mode', short: 'r', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":641,"end":646,"loc":{"start":{"line":20,"column":33,"index":641},"end":{"line":20,"column":38,"index":646}},"value":false}}]}, validator: '(val) => true' },
         'name': { type: 'z.string.max.default', required: true, hasDefault: true, default: "delphis", description: 'Name of the container', short: 'n', schema: {"type":"zod","method":"default","args":[{"type":"literal","value":"delphis"}]}, validator: '(val) => true' }
       },
       path: '../cli/commands/share'

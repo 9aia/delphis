@@ -3,16 +3,20 @@ import {
   buildSshRemoteAuthority,
   CodeRemotePasswordWithoutUsernameError,
   openRemoteCode,
-} from '../cli/lib/code-remote'
+} from '../lib/code-remote'
 
 // Mock the env module
-mock.module('../cli/env', () => ({
+mock.module('../env/shared', () => ({
   env: {
     DELPHIS_PORT: 22444,
     DELPHIS_USERNAME: 'delphis',
     DELPHIS_PASSWORD: undefined,
-    DELPHIS_LAUNCH_EDITOR: 'code',
     DELPHIS_FOLDER: './delphis',
+  },
+}))
+mock.module('../env/cli', () => ({
+  env: {
+    DELPHIS_LAUNCH_EDITOR: 'code',
   },
 }))
 
