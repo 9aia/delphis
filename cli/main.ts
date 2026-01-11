@@ -1,9 +1,10 @@
 #!/usr/bin/env bun
 import { createCLI } from '@bunli/core'
+import { crashOnError } from '@/shared/lib/neverthrow'
 import pkg from '../package.json'
 import manifest from './manifest'
 
-async function main() {
+crashOnError(async () => {
   const cli = await createCLI({
     name: pkg.name,
     version: pkg.version,
@@ -11,11 +12,6 @@ async function main() {
   })
 
   await cli.load(manifest)
-
-  // Loads manifest if configured)
   await cli.init()
-
   await cli.run()
-}
-
-main()
+})
