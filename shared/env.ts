@@ -8,8 +8,8 @@ import { tcpPortSchema } from '../lib/zod'
  */
 const envSchema = z.object({
   // SSH connection settings
-  DELPHIS_USERNAME: z.string().nullable().default('delphis'),
-  DELPHIS_PASSWORD: z.string(),
+  DELPHIS_USERNAME: z.string().default('delphis'),
+  DELPHIS_PASSWORD: z.string().default('delphis'),
   DELPHIS_PORT: tcpPortSchema.default(22444),
 
   // Root project container folder

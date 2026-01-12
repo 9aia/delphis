@@ -6,17 +6,19 @@ import {
 } from '../lib/code-remote'
 
 // Mock the env module
-mock.module('../env/shared', () => ({
-  env: {
+mock.module('../shared/env', () => ({
+  sharedEnv: {
     DELPHIS_PORT: 22444,
     DELPHIS_USERNAME: 'delphis',
     DELPHIS_PASSWORD: undefined,
     DELPHIS_FOLDER: '/delphis',
   },
 }))
-mock.module('../env/cli', () => ({
-  env: {
+mock.module('../cli/env', () => ({
+  cliEnv: {
     DELPHIS_LAUNCH_EDITOR: 'code',
+    DELPHIS_TAILSCALE_API_ACCESS_TOKEN: 'token',
+    DELPHIS_TAILSCALE_TAILNET_ID: 'tailnet',
   },
 }))
 
