@@ -1,15 +1,14 @@
-import type { Agent } from '@/lib/mcd'
-import dgram from 'node:dgram'
+import type { DelphisDiscoveryError, DiscoveryClient } from '@/lib/delphis-discovery'
+import process from 'node:process'
 import { defineCommand } from '@bunli/core'
 import { intro, log, outro, select, spinner } from '@clack/prompts'
 import c from 'chalk'
-import { onDiscoveryMessage, sendDiscoveryPackets } from '@/lib/mcd'
-import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '../../lib/code-remote'
+import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '@/lib/code-remote'
+import { createDiscoveryServer } from '@/lib/delphis-discovery'
 import { isBinaryInstalled } from '../../lib/os'
 import { getTailscaleDevices, isTailscaleUp } from '../../lib/tailscale'
 import pkg from '../../package.json'
-
-const DISCOVERY_TIMEOUT_MS = 3000
+import { logger } from '../logger'
 
 export default defineCommand({
   name: 'join',
@@ -41,73 +40,81 @@ export default defineCommand({
     }
 
     const spin = spinner()
-    spin.start()
+    spin.start(c.blue('Discovering available remote development environments...'))
 
-    // TODO: refactor into a single function with callbacks
-    const agents: Agent[] = []
-    const socket = dgram.createSocket('udp4')
+    const clients: DiscoveryClient[] = []
+    const errors: DelphisDiscoveryError[] = []
 
-    sendDiscoveryPackets({
-      socket,
+    const server = createDiscoveryServer({
       tailscaleDevices,
-      onPacketSent: (device) => {
-        spin.message(`Sent discovery packet to ${device.hostname}`)
+      onError(error) {
+        logger.error(error)
+        spin.stop()
+        spin.clear()
+        log.error('Discovery server socket error. See Delphis logs for more details.')
+        outro(c.red('Error. Please try again.'))
+        process.exit(1)
       },
-      onFinish: () => {
-        spin.message('Discover packets sent. Waiting for agents to respond...')
+      onMessageError(error) {
+        errors.push(error)
+        logger.error(error)
+      },
+      onClientAvailable(client) {
+        spin.message(c.green(`Found ${client.hostname} - ${client.os} - ${client.ip}`))
+        clients.push(client)
       },
     })
-
-    onDiscoveryMessage({
-      socket,
-      tailscaleDevices,
-      onNewAgent: agent => agents.push(agent),
+    server.requestNetwork({
+      onError: (error) => {
+        errors.push(error)
+        logger.error(error)
+      },
     })
+    server.open()
 
-    const onDiscoverTimeout = async () => {
-      spin.clear()
+    spin.stop()
+    spin.clear()
 
-      const firstAgent = agents[0]
-
-      if (!firstAgent) {
-        outro(c.yellow('No agents found. Please ensure that there are remote development environments available to join.'))
-
-        socket.close()
-        return
-      }
-
-      let host = firstAgent.ip
-
-      if (agents.length > 1) {
-        host = await select({
-          message: 'Select a agent to join:',
-          options: agents.map(agent => ({
-            label: `${agent.hostname} - ${agent.os} - ${agent.ip}`,
-            value: agent.ip,
-          })),
-        }) as string
-      }
-
-      const codeArgs = positional
-
-      try {
-        openRemoteCode({
-          host,
-          codeArgs,
-        })
-      }
-      catch (error) {
-        if (error instanceof CodeRemotePasswordWithoutUsernameError) {
-          log.warn(error.message)
-        }
-        else {
-          throw error
-        }
-      }
-
-      outro(c.green('Joined the remote development environment.'))
+    if (errors.length) {
+      log.error('Some errors occurred while discovering remote development environments. See Delphis logs for more details.')
     }
 
-    setTimeout(async () => onDiscoverTimeout(), DISCOVERY_TIMEOUT_MS)
+    const firstAgent = clients[0]
+
+    if (!clients.length || !firstAgent) {
+      outro(c.yellow('No agents found. Please ensure that there are remote development environments available to join.'))
+      return
+    }
+
+    let host = firstAgent.ip
+
+    if (clients.length > 1) {
+      host = await select({
+        message: 'Select a agent to join:',
+        options: clients.map(agent => ({
+          label: `${agent.hostname} - ${agent.os} - ${agent.ip}`,
+          value: agent.ip,
+        })),
+      }) as string
+    }
+
+    const codeArgs = positional
+
+    try {
+      openRemoteCode({
+        host,
+        codeArgs,
+      })
+    }
+    catch (error) {
+      if (error instanceof CodeRemotePasswordWithoutUsernameError) {
+        log.warn(error.message)
+      }
+      else {
+        throw error
+      }
+    }
+
+    outro(c.green('Joined the remote development environment.'))
   },
 })
