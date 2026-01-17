@@ -2,7 +2,7 @@ FROM ubuntu
 
 RUN apt-get update && apt-get install -y openssh-server git
 
-RUN mkdir /var/run/sshd /delphis
+RUN mkdir /delphis
 
 RUN chmod -R 777 /delphis
 

@@ -5,12 +5,10 @@ import { err, ok } from 'neverthrow'
 import { sharedEnv } from '@/shared/env'
 import { result } from '@/shared/lib/neverthrow'
 
-export const DELPHIS_IMAGE = 'delphis'
-
 export const docker = new Docker()
 
 const containerOptions: Docker.ContainerCreateOptions = {
-  Image: DELPHIS_IMAGE,
+  Image: 'delphis',
   name: 'delphis',
 
   Env: [
@@ -44,6 +42,7 @@ export async function getContainer(options: GetContainerOptions = {
   if (inspectResult.isErr()) {
     const error = inspectResult.error
 
+    // Handle not found
     if (error.includes('No such container')) {
       if (!options.createIfNotExists) {
         return ok(null)
@@ -57,5 +56,17 @@ export async function getContainer(options: GetContainerOptions = {
     return err(error)
   }
 
-  return ok(container)
+  const stopAndRemoveResult = await result(async () => {
+    // Stop the container if it is running
+    await container.stop()
+    // Remove the container
+    await container.remove()
+  })
+
+  if (stopAndRemoveResult.isErr()) {
+    return err(stopAndRemoveResult.error)
+  }
+
+  // Create a new container
+  return ok(await docker.createContainer(containerOptions))
 }
