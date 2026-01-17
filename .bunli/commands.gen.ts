@@ -47,7 +47,7 @@ const metadata: Record<GeneratedNames, GeneratedCommandMeta> = {
       name: 'unshare',
       description: 'Unshare your current development environment',
       options: {
-        'force': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Force stop the container', short: 'f', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":526,"end":531,"loc":{"start":{"line":16,"column":33,"index":526},"end":{"line":16,"column":38,"index":531}},"value":false}}]}, validator: '(val) => true' }
+        'force': { type: 'z.coerce.boolean.default', required: true, hasDefault: true, default: false, description: 'Force stop the container', short: 'f', schema: {"type":"zod","method":"default","args":[{"type":"unknown","raw":{"type":"BooleanLiteral","start":502,"end":507,"loc":{"start":{"line":15,"column":33,"index":502},"end":{"line":15,"column":38,"index":507}},"value":false}}]}, validator: '(val) => true' }
       },
       path: '../cli/commands/unshare'
     }

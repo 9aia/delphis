@@ -4,9 +4,9 @@ import { defineCommand } from '@bunli/core'
 import { intro, log, outro, select, spinner } from '@clack/prompts'
 import c from 'chalk'
 import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '@/lib/code-remote'
-import { createDiscoveryServer } from '@/lib/delphis-discovery'
+import { createDiscoveryServer, DelphisDiscoveryTimeoutError } from '@/lib/delphis-discovery'
 import { isBinaryInstalled } from '../../lib/os'
-import { getTailscaleDevices, isTailscaleUp } from '../../lib/tailscale'
+import { getTailscaleDevices, getTailscaleIp, isTailscaleUp } from '../../lib/tailscale'
 import pkg from '../../package.json'
 import { logger } from '../logger'
 
@@ -15,6 +15,13 @@ export default defineCommand({
   description: 'Join a remote development environment',
   handler: async ({ positional }) => {
     intro(c.inverse(pkg.name))
+
+    const tailscaleIp = getTailscaleIp()
+
+    if (!tailscaleIp) {
+      log.error('No Tailscale IP address found. Please ensure Tailscale is running and try again.')
+      return
+    }
 
     const initPromises = [
       isBinaryInstalled('tailscale'),
@@ -39,14 +46,18 @@ export default defineCommand({
       return
     }
 
+    const tailscaleDevicesToRequest = tailscaleDevices.filter(device => !device.addresses.includes(tailscaleIp))
+
     const spin = spinner()
     spin.start(c.blue('Discovering available remote development environments...'))
 
     const clients: DiscoveryClient[] = []
     const errors: DelphisDiscoveryError[] = []
 
+    const discoveryTimeoutMs = 3000
+
     const server = createDiscoveryServer({
-      tailscaleDevices,
+      tailscaleDevices: tailscaleDevicesToRequest,
       onError(error) {
         logger.error(error)
         spin.stop()
@@ -66,11 +77,20 @@ export default defineCommand({
     })
     server.open()
     server.requestNetwork({
+      timeout: discoveryTimeoutMs,
       onError: (error) => {
+        if (error instanceof DelphisDiscoveryTimeoutError) {
+          return
+        }
+
         errors.push(error)
         logger.error(error)
       },
     })
+
+    await new Promise(resolve => setTimeout(resolve, discoveryTimeoutMs + 250))
+
+    server.close()
 
     spin.stop()
     spin.clear()

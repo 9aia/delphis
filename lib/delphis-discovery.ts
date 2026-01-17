@@ -74,7 +74,7 @@ export function createDiscoveryServer(
     }
 
     socket.send(
-      Buffer.from('AVAILABILITY_REQUEST'),
+      Buffer.from('DISCOVER_AGENTS'),
       PORT,
       address,
       (error) => {
@@ -120,6 +120,10 @@ export function createDiscoveryServer(
 
   const handleMessage = (msg: Buffer, rinfo: dgram.RemoteInfo): void => {
     const text = msg.toString()
+
+    if (text.startsWith('DISCOVER_AGENTS')) {
+      return
+    }
 
     if (!text.startsWith('AGENT:')) {
       const error = new DelphisDiscoveryMessageInvalidError(`Invalid message received: ${text}`)
