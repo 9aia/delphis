@@ -14,6 +14,8 @@ const containerOptions: Docker.ContainerCreateOptions = {
   Env: [
     `USERNAME=${sharedEnv.DELPHIS_USERNAME}`,
     `PASSWORD=${sharedEnv.DELPHIS_PASSWORD}`,
+    `HOST_UID=${os.userInfo().uid}`,
+    `HOST_GID=${os.userInfo().gid}`,
   ],
 
   HostConfig: {
@@ -57,8 +59,11 @@ export async function getContainer(options: GetContainerOptions = {
   }
 
   const stopAndRemoveResult = await result(async () => {
-    // Stop the container if it is running
-    await container.stop()
+    if (inspectResult.value.State.Running) {
+      // Stop the container if it is running
+      await container.stop()
+    }
+
     // Remove the container
     await container.remove()
   })

@@ -4,6 +4,8 @@ set -e
 # Default values
 USERNAME=${USERNAME:-root}
 PASSWORD=${PASSWORD:-password}
+HOST_UID=${HOST_UID:-1000}
+HOST_GID=${HOST_GID:-1000}
 
 # Validate username
 if [ "$USERNAME" = "root" ]; then
@@ -11,21 +13,27 @@ if [ "$USERNAME" = "root" ]; then
     exit 1
 fi
 
-# Create user if it doesn't exist
-if ! id "$USERNAME" &>/dev/null; then
-    useradd -M -s /bin/bash "$USERNAME"
-fi
+# Remove any existing user with target UID or username
+getent passwd "$HOST_UID" | cut -d: -f1 | xargs -r userdel -r 2>/dev/null || true
+id "$USERNAME" &>/dev/null && userdel -r "$USERNAME" 2>/dev/null || true
+
+# Create group if needed
+getent group "$HOST_GID" &>/dev/null || groupadd -g "$HOST_GID" "$USERNAME"
+
+# Create user with host UID/GID
+useradd -M -s /bin/bash -u "$HOST_UID" -g "$HOST_GID" "$USERNAME"
 
 # Set password
 echo "$USERNAME:$PASSWORD" | chpasswd
 
 # Ensure home directory exists with correct permissions
 mkdir -p "/home/$USERNAME"
-chown "$USERNAME":"$USERNAME" "/home/$USERNAME"
+chown "$HOST_UID":"$HOST_GID" "/home/$USERNAME"
 
-# Set /delphis permissions
+# Set /delphis permissions to match host user
+# Using chmod 777 to ensure full access, but ownership matches host
 chmod -R 777 /delphis
-chown -R "$USERNAME":"$USERNAME" /delphis
+chown -R "$HOST_UID":"$HOST_GID" /delphis
 
 # Create SSH directory and start service
 mkdir -p /run/sshd
