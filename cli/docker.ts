@@ -44,7 +44,7 @@ export async function getContainer(options: GetContainerOptions = {
   if (inspectResult.isErr()) {
     const error = inspectResult.error
 
-    if (error === 'No such container') {
+    if (error.includes('No such container')) {
       if (!options.createIfNotExists) {
         return ok(null)
       }
