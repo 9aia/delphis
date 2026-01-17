@@ -1,7 +1,7 @@
 {
   "name": "delphis",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
   "packageManager": "bun@1.3.5",
   "description": "A CLI for remote dev environments with Tailscale & VS Code Remote SSH.",
@@ -25,7 +25,8 @@
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
     "mcd:find": "./mcd/find.ts",
-    "mcd:open": "./mcd/open.ts"
+    "mcd:open": "./mcd/open.ts",
+    "release": "release-it"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
@@ -49,7 +50,8 @@
     "@types/bun": "^1.3.5",
     "@types/dockerode": "^3.3.47",
     "eslint": "^9.39.2",
-    "eslint-plugin-format": "^1.1.0"
+    "eslint-plugin-format": "^1.1.0",
+    "release-it": "^19.2.3"
   },
   "delphis": {
     "mcd-entrypoint": "./mcd/open.ts"

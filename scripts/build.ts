@@ -8,13 +8,16 @@ try {
   await Bun.$`
     bun build \
       --compile ${pkg.module} \
-      --define:NODE_ENV=production \
+      --production \
       --define:BUILD_VERSION='"${pkg.version}"' \
       --minify \
       --sourcemap \
-      --bytecode \
       --outfile ${pkg.bin.delphis}
   `
+
+  // Make the output executable
+  await Bun.$`chmod +x ${pkg.bin.delphis}`
+
   console.log('Built successfully')
 }
 catch (error) {
