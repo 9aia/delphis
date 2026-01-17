@@ -108,13 +108,13 @@ bunx delphis status
 
 ### Environment Variables
 
-| Variable                | Default    | Description            |
-| ----------------------- | ---------- | ---------------------- |
-| `DELPHIS_LAUNCH_EDITOR` | `code`     | Editor binary to launch|
-| `DELPHIS_USERNAME`      | `delphis`  | SSH username           |
-| `DELPHIS_PASSWORD`      | -          | SSH password           |
-| `DELPHIS_PORT`          | `22444`    | SSH port               |
-| `DELPHIS_FOLDER`        | `/delphis` | Remote folder path     |
+| Variable                | Default    | Description             |
+| ----------------------- | ---------- | ----------------------- |
+| `DELPHIS_LAUNCH_EDITOR` | `code`     | Editor binary to launch |
+| `DELPHIS_USERNAME`      | `delphis`  | SSH username            |
+| `DELPHIS_PASSWORD`      | -          | SSH password            |
+| `DELPHIS_PORT`          | `22444`    | SSH port                |
+| `DELPHIS_FOLDER`        | `/delphis` | Remote folder path      |
 
 ### Troubleshooting
 
