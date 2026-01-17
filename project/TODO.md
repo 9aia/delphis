@@ -10,3 +10,5 @@
 
 - Exec command to run commands on the remote container, e.g. `delphis exec -- bun i dev`
 - Improve the status command to discover and list available remote environments, showing host/device info for each. Use discovery logic similar to the join command, but without connecting/opening sessions.
+
+- Auto install vscode extensions based on .vscode/extensions.json
