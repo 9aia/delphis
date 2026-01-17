@@ -64,13 +64,13 @@ export default defineCommand({
         clients.push(client)
       },
     })
+    server.open()
     server.requestNetwork({
       onError: (error) => {
         errors.push(error)
         logger.error(error)
       },
     })
-    server.open()
 
     spin.stop()
     spin.clear()
