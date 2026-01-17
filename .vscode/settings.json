@@ -60,8 +60,8 @@
 
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "README.md": "LICENSE",
+    "README.md": "LICENSE, CONTRIBUTING.md",
     ".env.example": ".env",
-    "package.json": "bun.lock, tsconfig.json, eslint.config.js"
+    "package.json": "bun.lock, tsconfig.json, eslint.config.js, .release-it.json"
   }
 }
