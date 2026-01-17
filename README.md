@@ -1,239 +1,129 @@
 # Delphis
 
-A CLI tool for creating and joining secure remote development environments using Tailscale and VS Code Remote SSH.
-
-A CLI tool for creating and joining secure remote development environments using Tailscale and VS Code Remote SSH.
+Secure remote development environments using Tailscale and VS Code Remote SSH protocol.
 
 ## Overview
 
-Delphis enables seamless remote development by combining:
+Delphis enables seamless remote development across machines on your Tailscale network. Share your local environment or join a remote one with zero-config networking and end-to-end encryption.
 
-- **Tailscale** for secure, zero-config networking
-- **SSH** for remote access
-- **VS Code Remote SSH protocol** for editor compatibility
-
-Works with VS Code, Cursor, and any editor that supports the VS Code Remote SSH protocol.
-
-## Features
-
-- 🔒 **Secure by default** - Uses Tailscale's encrypted mesh VPN
-- 🚀 **Zero-config networking** - No port forwarding or firewall rules needed
-- 💻 **Editor agnostic** - Works with VS Code, Cursor, and compatible editors
-- 🐳 **Docker-based** - Easy to deploy and manage remote environments
-- ⚡ **Fast setup** - Get started in minutes
+Compatible with VS Code, Cursor, and any editor supporting the VS Code Remote SSH protocol.
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) runtime
-- [Tailscale](https://tailscale.com) installed and configured
+- [Bun](https://bun.sh) or Node.js runtime
+- [Tailscale](https://tailscale.com) installed and running
 - [Docker](https://www.docker.com) (for sharing environments)
-- A Tailscale API access token
 - VS Code, Cursor, or compatible editor
 
-## Installation
+## Quick Start
+
+Install Delphis as a dev dependency in your project:
 
 ```bash
-# Clone the repository
-git clone https://github.com/9aia/delphis.git
-cd delphis
+bun add -D delphis
+# or any other package manager
+```
 
-# Install dependencies
-bun install
+You can use the `delphis` command directly in your project's terminal:
+
+```bash
+bunx delphis share
+bunx delphis join
+```
+
+You can also add to your project's `package.json` scripts:
+
+```json
+{
+  "scripts": {
+    "dev:share": "delphis share",
+    "dev:join": "delphis join"
+  }
+}
 ```
 
 ## Configuration
 
-Delphis uses environment variables for configuration. Create a `.env` file in the project root:
+All configuration is optional via environment variables in your project's `.env` file:
 
 ```env
-# Required: Tailscale API credentials
-DELPHIS_TAILSCALE_API_ACCESS_TOKEN=your_api_token_here
-DELPHIS_TAILSCALE_TAILNET_ID=your_tailnet_id_here
-
-# Optional: Editor settings
-DELPHIS_LAUNCH_EDITOR=code  # or 'cursor' or path to your editor
-
-# Optional: SSH connection settings
+DELPHIS_LAUNCH_EDITOR=code  # or 'cursor'
 DELPHIS_USERNAME=delphis
-DELPHIS_PASSWORD=your_password  # Optional, for password authentication
+DELPHIS_PASSWORD=your_password
 DELPHIS_PORT=22444
-
-# Optional: Remote folder path
 DELPHIS_FOLDER=/delphis
 ```
 
-### Getting Tailscale API Credentials
-
-1. Go to [Tailscale Admin Console](https://login.tailscale.com/admin/settings/keys)
-2. Create an API access token
-3. Get your Tailnet ID from the admin console URL or API
+Defaults work out of the box without any configuration.
 
 ## Usage
 
-### Share a Development Environment
-
-Start sharing your current directory as a remote development environment:
+### Share Your Environment
 
 ```bash
-bun run start share
+bunx delphis share
+# or
+npx delphis share
 ```
 
-This will:
-
-- Start a Docker container with SSH server
-- Mount your current directory into the container
-- Make it accessible via Tailscale network
-
-Options:
-
-- `-d, --detach` - Run in detached mode
-- `-r, --readonly` - Mount the directory as read-only
+Starts a Docker container with SSH access to your current directory, discoverable on your Tailscale network.
 
 ### Join a Remote Environment
 
-Connect to a remote development environment:
-
 ```bash
-bun run start join
+bunx delphis join
+# or
+npx delphis join
 ```
 
-This will:
+Discovers available remote environments on your Tailnet and opens your editor connected to the selected host.
 
-- Check if Tailscale is installed and running
-- Discover the remote host on your Tailnet
-- Open your editor with the remote connection
-
-You can pass additional arguments to your editor:
+Pass additional editor arguments:
 
 ```bash
-bun run start join -- --new-window
+bunx delphis join -- --new-window
 ```
 
-### Stop a Remote Environment
-
-Stop the running Docker container:
+### Stop Sharing
 
 ```bash
-bun run start stop
+bunx delphis unshare
 ```
 
-### Get Help
+### Check Status
 
 ```bash
-bun run start help
-bun run start --help
+bunx delphis status
 ```
 
 ## How It Works
 
-1. **Sharing**: When you run `share`, Delphis:
-   - Starts a Docker container with an SSH server
-   - Configures the container to use host networking
-   - Mounts your project directory into the container
-   - The container is accessible via Tailscale IP addresses
+**Share**: Delphis runs a Docker container with SSH server, mounts your project directory, and makes it accessible via Tailscale's encrypted mesh network.
 
-2. **Joining**: When you run `join`, Delphis:
-   - Verifies Tailscale is installed and running
-   - Discovers the remote host on your Tailnet
-   - Builds an SSH remote authority string
-   - Launches your editor with the remote connection
+**Join**: Delphis discovers remote environments on your Tailnet using UDP broadcast, then launches your editor with the appropriate SSH connection.
 
-3. **Security**: All traffic is encrypted through Tailscale's mesh VPN, ensuring secure communication without exposing ports to the public internet.
+**Security**: All traffic is encrypted through Tailscale's WireGuard-based VPN. No ports exposed to the public internet.
 
-## Architecture
+## Documentation
 
-```
-┌─────────────────┐         ┌──────────────────┐
-│   Your Machine  │         │  Remote Machine  │
-│                 │         │                  │
-│  ┌───────────┐  │         │  ┌────────────┐  │
-│  │  Editor   │  │◄───────►│  │ SSH Server │  │
-│  │ (VS Code) │  │  SSH    │  │  (Docker)  │  │
-│  └───────────┘  │         │  └────────────┘  │
-│       │         │         │        │         │
-│  ┌───────────┐  │         │  ┌────────────┐  │
-│  │ Tailscale │  │◄───────►│  │ Tailscale  │  │
-│  │  Client   │  │  VPN    │  │  Client    │  │
-│  └───────────┘  │         │  └────────────┘  │
-└─────────────────┘         └──────────────────┘
-```
+### Environment Variables
 
-## Development
+| Variable                | Default    | Description            |
+| ----------------------- | ---------- | ---------------------- |
+| `DELPHIS_LAUNCH_EDITOR` | `code`     | Editor binary to launch|
+| `DELPHIS_USERNAME`      | `delphis`  | SSH username           |
+| `DELPHIS_PASSWORD`      | -          | SSH password           |
+| `DELPHIS_PORT`          | `22444`    | SSH port               |
+| `DELPHIS_FOLDER`        | `/delphis` | Remote folder path     |
 
-### Setup
+### Troubleshooting
 
-```bash
-# Install dependencies
-bun install
+**Tailscale not found**: Install from [tailscale.com](https://tailscale.com/download) and ensure it's in your PATH.
 
-# Run in development mode (with watch)
-bun run dev
+**Tailscale not running**: Run `tailscale up` to connect to your Tailnet.
 
-# Type check
-bun run typecheck
+**No environments discovered**: Ensure the remote machine is running `delphis share` and is on your Tailnet.
 
-# Lint
-bun run lint
-bun run lint:fix
+---
 
-# Run tests
-bun test
-```
-
-### Project Structure
-
-```
-delphis/
-├── cli/                 # CLI application
-│   ├── commands/        # Command implementations
-│   ├── lib/            # Shared libraries
-│   └── main.ts         # Entry point
-├── ssh-server/         # Docker setup for SSH server
-├── types/              # TypeScript type definitions
-├── tests/              # Test files
-└── package.json
-```
-
-## Environment Variables Reference
-
-| Variable                             | Required | Default     | Description                |
-| ------------------------------------ | -------- | ----------- | -------------------------- |
-| `DELPHIS_TAILSCALE_API_ACCESS_TOKEN` | Yes      | -           | Tailscale API access token |
-| `DELPHIS_TAILSCALE_TAILNET_ID`       | Yes      | -           | Your Tailscale Tailnet ID  |
-| `DELPHIS_LAUNCH_EDITOR`              | No       | `code`      | Editor binary to launch    |
-| `DELPHIS_USERNAME`                   | No       | `delphis`   | SSH username               |
-| `DELPHIS_PASSWORD`                   | No       | -           | SSH password (optional)    |
-| `DELPHIS_PORT`                       | No       | `22444`     | SSH port                   |
-| `DELPHIS_FOLDER`                     | No       | `/delphis` | Remote folder path         |
-
-## Troubleshooting
-
-### Tailscale is not installed
-
-Make sure Tailscale is installed and in your PATH. Install from [tailscale.com](https://tailscale.com/download).
-
-### Tailscale is not up
-
-Start Tailscale and ensure it's connected to your Tailnet:
-
-```bash
-tailscale up
-```
-
-### Docker container fails to start
-
-- Ensure Docker is running
-- Check that the required ports are available
-- Verify environment variables are set correctly
-
-### Editor doesn't connect
-
-- Verify the remote host is accessible via Tailscale
-- Check that SSH is running on the remote container
-- Ensure your editor supports VS Code Remote SSH protocol
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-Copyright (c) 2024-present Luis Emidio and Vinicius Emidio Bosi
+[License](LICENSE) | [Contributing](CONTRIBUTING.md)
