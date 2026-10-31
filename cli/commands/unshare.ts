@@ -1,22 +1,16 @@
 import process from 'node:process'
-import { defineCommand, option } from '@bunli/core'
 import { log, outro, spinner } from '@clack/prompts'
 import c from 'chalk'
-import z from 'zod'
+import { defineCommand } from 'cheloni'
 import { result } from '@/shared/lib/neverthrow'
 import { getContainer } from '../docker'
-import { dockerHandler } from '../handlers/docker'
+import { dockerMiddleware } from '../middleware/docker'
 
 export default defineCommand({
   name: 'unshare',
   description: 'Unshare your current development environment',
-  options: {
-    force: option(
-      z.coerce.boolean().default(false),
-      { description: 'Force stop the container', short: 'f' },
-    ),
-  },
-  handler: dockerHandler(async () => {
+  middleware: dockerMiddleware,
+  handler: async () => {
     const containerResult = await getContainer({ createIfNotExists: false })
 
     if (!containerResult.isOk()) {
@@ -60,5 +54,5 @@ export default defineCommand({
     s.stop('Success')
 
     outro(c.green('Delphis container has been stopped.'))
-  }),
+  },
 })

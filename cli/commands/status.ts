@@ -1,15 +1,16 @@
 import process from 'node:process'
-import { defineCommand } from '@bunli/core'
 import { log, outro } from '@clack/prompts'
 import c from 'chalk'
+import { defineCommand } from 'cheloni'
 import { result } from '@/shared/lib/neverthrow'
 import { getContainer } from '../docker'
-import { dockerHandler } from '../handlers/docker'
+import { dockerMiddleware } from '../middleware/docker'
 
 export default defineCommand({
   name: 'status',
   description: 'Check if Delphis is running',
-  handler: dockerHandler(async () => {
+  middleware: dockerMiddleware,
+  handler: async () => {
     const containerResult = await getContainer({ createIfNotExists: false })
 
     if (!containerResult.isOk()) {
@@ -44,5 +45,5 @@ export default defineCommand({
 
     log.info('Delphis container exists but is not running.')
     outro(c.yellow('Status: Stopped'))
-  }),
+  },
 })

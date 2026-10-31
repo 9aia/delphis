@@ -1,17 +1,18 @@
 #!/usr/bin/env bun
-import { createCLI } from '@bunli/core'
+import { createCli, executeCli } from 'cheloni'
+import { standardPlugin } from 'cheloni/plugins'
 import { crashOnError } from '@/shared/lib/neverthrow'
 import pkg from '../package.json'
 import manifest from './manifest'
 
 crashOnError(async () => {
-  const cli = await createCLI({
+  const cli = await createCli({
     name: pkg.name,
     version: pkg.version,
     description: pkg.description,
+    command: manifest,
+    plugin: standardPlugin,
   })
 
-  await cli.load(manifest)
-  await cli.init()
-  await cli.run()
+  await executeCli({ cli })
 })

@@ -1,15 +1,16 @@
 import process from 'node:process'
-import { defineCommand } from '@bunli/core'
 import { log, outro, spinner } from '@clack/prompts'
 import c from 'chalk'
+import { defineCommand } from 'cheloni'
 import { result } from '@/shared/lib/neverthrow'
 import { getContainer } from '../docker'
-import { dockerHandler } from '../handlers/docker'
+import { dockerMiddleware } from '../middleware/docker'
 
 export default defineCommand({
   name: 'share',
   description: 'Share a remote development environment',
-  handler: dockerHandler(async () => {
+  middleware: dockerMiddleware,
+  handler: async () => {
     const containerResult = await getContainer({ createIfNotExists: true })
 
     if (!containerResult.isOk()) {
@@ -48,5 +49,5 @@ export default defineCommand({
     s.stop('Success')
 
     outro(c.green('Delphis is now sharing your environment.'))
-  }),
+  },
 })

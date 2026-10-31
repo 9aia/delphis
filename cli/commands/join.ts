@@ -1,8 +1,9 @@
 import type { DelphisDiscoveryError, DiscoveryClient } from '@/lib/delphis-discovery'
 import process from 'node:process'
-import { defineCommand } from '@bunli/core'
 import { intro, log, outro, select, spinner } from '@clack/prompts'
 import c from 'chalk'
+import { defineCommand } from 'cheloni'
+import z from 'zod'
 import { CodeRemotePasswordWithoutUsernameError, openRemoteCode } from '@/lib/code-remote'
 import { createDiscoveryServer, DelphisDiscoveryTimeoutError } from '@/lib/delphis-discovery'
 import { isBinaryInstalled } from '../../lib/os'
@@ -13,6 +14,7 @@ import { logger } from '../logger'
 export default defineCommand({
   name: 'join',
   description: 'Join a remote development environment',
+  positional: z.array(z.string()),
   handler: async ({ positional }) => {
     intro(c.inverse(pkg.name))
 

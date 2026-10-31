@@ -1,7 +1,7 @@
 import process from 'node:process'
-import { defineCommand } from '@bunli/core'
 import { intro, log, outro } from '@clack/prompts'
 import c from 'chalk'
+import { defineCommand } from 'cheloni'
 import pkg from '../../package.json'
 
 export default defineCommand({
